@@ -350,6 +350,14 @@ class ScreenOnSuppressionTest {
     assertFalse(service.suppression.shouldSuppressWindow(window))
     windowPackages[1] = "com.android.systemui"
     assertTrue(service.suppression.shouldSuppressWindow(window))
+    // Real wake trace: System UI is spoken, but an unrelated removed source has no root.
+    window.eventSourceWindow.setId(77)
+    assertTrue(service.suppression.shouldSuppressWindow(window))
+    windowPackages[77] = "example.biometrics"
+    assertTrue(service.suppression.shouldSuppressWindow(window))
+    window.otherActiveWindow.setId(77)
+    assertFalse(service.suppression.shouldSuppressWindow(window))
+    window.otherActiveWindow.setId(-1)
     window.windowB.setId(2)
     windowPackages[2] = "example.clock"
     assertFalse(service.suppression.shouldSuppressWindow(window))
@@ -360,6 +368,25 @@ class ScreenOnSuppressionTest {
     window.picInPic.setId(-1)
     window.setShouldAnnounceInputMethodChange(true)
     assertFalse(service.suppression.shouldSuppressWindow(window))
+  }
+
+  @Test
+  fun anUnknownOrEmergencyPaneTitleStillSpeaks() {
+    suppress(true)
+    service.suppression.onDisplayStateChanged(true)
+    val pane = WindowEventInterpreter.EventInterpretation().apply {
+      setEventType(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
+      setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED)
+      eventSourceWindow.setId(88)
+      eventSourceWindow.setTitleForFeedback("Emergency alert")
+    }
+    assertFalse(service.suppression.shouldSuppressWindow(pane))
+    assertFalse(composer.composeFeedback(pane, 0).isEmpty)
+    windowPackages[88] = "example.cellbroadcast"
+    assertFalse(service.suppression.shouldSuppressWindow(pane))
+    assertFalse(composer.composeFeedback(pane, 0).isEmpty)
+    windowPackages[88] = "com.android.systemui"
+    assertTrue(service.suppression.shouldSuppressWindow(pane))
   }
 
   @Test

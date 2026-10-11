@@ -164,9 +164,27 @@ class ScreenOnSpeechSuppression(
       interpretation.isWebDialogOpenedEvent) return false
     val announcement = interpretation.announcement
     if (announcement != null && !isEligiblePackage(announcement.packageName())) return false
-    val windows = listOf(interpretation.windowA, interpretation.windowB,
-      interpretation.otherActiveWindow, interpretation.picInPic, interpretation.eventSourceWindow)
-      .filter { it.id != WINDOW_ID_NONE }
+    // Match the composer's spoken roles. A disappearing event-source window is often absent
+    // during wake; it must not veto suppression of a separately verified System UI title.
+    val windows = mutableListOf<WindowEventInterpreter.WindowInterpretation>()
+    if (interpretation.mainWindowsChanged) {
+      if (interpretation.otherActiveWindow.id != WINDOW_ID_NONE) {
+        windows.add(interpretation.otherActiveWindow)
+      } else if (interpretation.windowA.id != WINDOW_ID_NONE) {
+        windows.add(interpretation.windowA)
+        if (interpretation.windowB.id != WINDOW_ID_NONE) windows.add(interpretation.windowB)
+      }
+    }
+    if ((interpretation.mainWindowsChanged || interpretation.picInPicChanged) &&
+      interpretation.picInPic.id != WINDOW_ID_NONE &&
+      interpretation.otherActiveWindow.id == WINDOW_ID_NONE) {
+      windows.add(interpretation.picInPic)
+    }
+    if (windows.isEmpty() && interpretation.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
+      interpretation.contentChangeTypes == AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED) {
+      if (interpretation.eventSourceWindow.id == WINDOW_ID_NONE) return false
+      windows.add(interpretation.eventSourceWindow)
+    }
     if (windows.any { !isEligiblePackage(windowPackage(it.id)) }) return false
     if (interpretation.mainWindowsChanged && windows.isEmpty()) return false
     return announcement != null || windows.isNotEmpty()
