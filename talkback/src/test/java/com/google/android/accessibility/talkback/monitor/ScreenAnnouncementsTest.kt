@@ -98,6 +98,7 @@ class ScreenAnnouncementsTest {
   fun suppressionIsPersistedAndOnlyAppliesBeforeInteractionAfterWake() {
     val prefs = FakeSharedPreferences()
     val suppression = ScreenOnSpeechSuppression(prefs, false, isLocked = { true },
+      systemUiPackages = setOf("com.android.systemui"),
       activePackage = { "com.android.systemui" }, now = { 0L })
     prefs.edit().putBoolean(ScreenAnnouncementSettings.SUPPRESS_EXTRA_SCREEN_ON_SPEECH, true).apply()
     assertFalse(suppression.isSuppressing())
@@ -118,6 +119,7 @@ class ScreenAnnouncementsTest {
     val prefs = FakeSharedPreferences()
     prefs.edit().putBoolean(ScreenAnnouncementSettings.SUPPRESS_EXTRA_SCREEN_ON_SPEECH, true).apply()
     val suppression = ScreenOnSpeechSuppression(prefs, false, isWear = true, isLocked = { true },
+      systemUiPackages = setOf("com.android.systemui"),
       activePackage = { "com.android.systemui" }, now = { 0L })
     suppression.onDisplayStateChanged(true)
     assertFalse(suppression.isSuppressing())

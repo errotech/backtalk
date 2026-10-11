@@ -18,9 +18,11 @@ package com.google.android.accessibility.talkback.monitor
 
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.ComponentName
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
@@ -45,6 +47,7 @@ class ScreenOnSpeechSuppression(
   private val prefs: SharedPreferences,
   initiallyScreenOn: Boolean,
   private val isWear: Boolean = false,
+  private val systemUiPackages: Set<String> = emptySet(),
   private val isLocked: () -> Boolean = { false },
   private val isCallActive: () -> Boolean = { false },
   private val activePackage: () -> CharSequence? = { null },
@@ -100,7 +103,7 @@ class ScreenOnSpeechSuppression(
   }
 
   private fun isEligiblePackage(packageName: CharSequence?): Boolean =
-    packageName?.toString() == SYSTEM_UI && packageName.toString() != emergencyPackage()
+    packageName?.toString() in systemUiPackages && packageName.toString() != emergencyPackage()
 
   fun onDeviceUnlocked() = onUserInteraction()
 
@@ -137,7 +140,21 @@ class ScreenOnSpeechSuppression(
 
   /** Focus can arrive without Backtalk's action history; System UI also posts later live updates. */
   fun shouldSuppressEvent(event: AccessibilityEvent): Boolean {
-    if (!isSuppressing() || !isEligiblePackage(event.packageName)) return false
+    if (!isSuppressing()) return false
+    val emergency = emergencyPackage()
+    if (emergency != null && event.packageName?.toString() == emergency) return false
+    if (!isEligiblePackage(event.packageName)) {
+      // OEM clock renderers may send focus/content events under their own package, while the
+      // actual node and its window belong to System UI. Verify both instead of naming an OEM.
+      if (event.eventType !in listOf(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED,
+          AccessibilityEvent.TYPE_VIEW_FOCUSED, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)) {
+        return false
+      }
+      val node = event.source ?: return false
+      if (!isEligiblePackage(node.packageName) || !isEligiblePackage(node.window?.root?.packageName)) {
+        return false
+      }
+    }
     return when (event.eventType) {
       AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED,
       AccessibilityEvent.TYPE_VIEW_FOCUSED -> true
@@ -191,12 +208,26 @@ class ScreenOnSpeechSuppression(
   }
   companion object {
     const val WAKE_SUPPRESSION_MS = 3_000L
-    private const val SYSTEM_UI = "com.android.systemui"
+    /** Android's OEM-overridable configuration identifies the UI/keyguard, not package guesses. */
+    internal fun systemUiPackagesFromConfig(read: (String) -> String?): Set<String> = buildSet {
+      read("config_systemUi")?.trim()?.takeIf { it.isNotEmpty() }?.let { add(it) }
+      for (name in listOf("config_systemUIServiceComponent", "config_keyguardComponent")) {
+        read(name)?.trim()?.let { ComponentName.unflattenFromString(it)?.packageName }?.let { add(it) }
+      }
+    }
 
     @JvmStatic
     fun create(service: TalkBackService, prefs: SharedPreferences, initiallyScreenOn: Boolean,
       isWear: Boolean): ScreenOnSpeechSuppression = ScreenOnSpeechSuppression(
       prefs, initiallyScreenOn, isWear,
+      systemUiPackages = systemUiPackagesFromConfig { name ->
+        val id = service.resources.getIdentifier(name, "string", "android")
+        if (id == 0) null else try {
+          service.resources.getString(id)
+        } catch (_: Resources.NotFoundException) {
+          null
+        }
+      },
       isLocked = { ScreenMonitor.isDeviceLocked(service) },
       isCallActive = { service.isPhoneCallActive },
       activePackage = { service.rootInActiveWindow?.packageName },

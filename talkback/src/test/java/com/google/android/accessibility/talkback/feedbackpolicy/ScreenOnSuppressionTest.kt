@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import android.view.accessibility.AccessibilityWindowInfo
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.google.android.accessibility.talkback.TalkBackService
 import com.google.android.accessibility.talkback.compositor.Compositor
@@ -66,10 +67,12 @@ class ScreenOnSuppressionTest {
   private var foreground: String? = "com.android.systemui"
   private var elapsed = 0L
   private var emergency: String? = "example.cellbroadcast"
+  private var uiPackages = setOf("com.android.systemui")
   private val windowPackages = mutableMapOf<Int, String>()
 
   private fun policy(initiallyOn: Boolean = false) = ScreenOnSpeechSuppression(
     SharedPreferencesUtils.getSharedPreferences(service), initiallyOn,
+    systemUiPackages = uiPackages,
     isLocked = { locked }, isCallActive = { callActive }, activePackage = { foreground },
     windowPackage = { windowPackages[it] }, emergencyPackage = { emergency }, now = { elapsed },
   )
@@ -182,6 +185,66 @@ class ScreenOnSuppressionTest {
     service.suppression.onUserInteraction()
     val selection = rawEvent(AccessibilityEvent.TYPE_VIEW_SELECTED).apply { text.add("Example Mobile") }
     assertFalse(service.suppression.shouldSuppressEvent(selection))
+  }
+
+  @Test
+  fun oemUiAndKeyguardPackagesComeFromConfigurationAndMissingConfigAllowsSpeech() {
+    val config = mapOf("config_systemUi" to "vendor.ui",
+      "config_systemUIServiceComponent" to "vendor.ui/.SystemService",
+      "config_keyguardComponent" to "vendor.lock/.KeyguardService")
+    uiPackages = ScreenOnSpeechSuppression.systemUiPackagesFromConfig { config[it] }
+    assertEquals(setOf("vendor.ui", "vendor.lock"), uiPackages)
+    service.suppression = policy()
+    foreground = "vendor.lock"
+    suppress(true)
+    service.suppression.onDisplayStateChanged(true)
+    assertTrue(service.suppression.shouldSuppressEvent(rawEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED, "vendor.lock")))
+    assertFalse(service.suppression.shouldSuppressEvent(rawEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED, "com.android.systemui")))
+    uiPackages = ScreenOnSpeechSuppression.systemUiPackagesFromConfig { if (it == "config_keyguardComponent") "invalid" else null }
+    assertTrue(uiPackages.isEmpty())
+    service.suppression = policy()
+    service.suppression.onDisplayStateChanged(true)
+    assertFalse(service.suppression.isSuppressing())
+  }
+
+  @Test
+  fun aRendererPackageCannotMakeSystemUiClockFocusSpeakTwice() {
+    val root = AccessibilityNodeInfo.obtain().apply { packageName = "com.android.systemui" }
+    val clock = AccessibilityNodeInfo.obtain().apply {
+      packageName = "com.android.systemui"
+      className = "android.widget.TextView"
+      text = "Clock sample"
+      isVisibleToUser = true
+      isAccessibilityFocused = true
+    }
+    val window = AccessibilityWindowInfo.obtain()
+    shadowOf(window).setRoot(root)
+    shadowOf(window).setType(AccessibilityWindowInfo.TYPE_SYSTEM)
+    shadowOf(clock).setAccessibilityWindowInfo(window)
+    // The sender is a separate renderer; neither its name nor the clock's text drives policy.
+    val event = rawEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED, "example.clock.renderer")
+    shadowOf(event).setSourceNode(clock)
+    suppress(true)
+    service.suppression.onDisplayStateChanged(true)
+    assertTrue(service.suppression.shouldSuppressEvent(event))
+    event.eventType = AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+    assertTrue(service.suppression.shouldSuppressEvent(event))
+    event.eventType = AccessibilityEvent.TYPE_ANNOUNCEMENT
+    assertFalse(service.suppression.shouldSuppressEvent(event))
+    event.eventType = AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED
+    assertFalse(service.suppression.shouldSuppressEvent(event))
+    event.eventType = AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED
+    event.packageName = "example.cellbroadcast"
+    assertFalse(service.suppression.shouldSuppressEvent(event))
+    event.packageName = "example.timer"
+    clock.packageName = "example.timer"
+    root.packageName = "example.timer"
+    assertFalse(service.suppression.shouldSuppressEvent(event))
+    clock.packageName = "com.android.systemui"
+    assertFalse(service.suppression.shouldSuppressEvent(event))
+    root.packageName = "com.android.systemui"
+    service.suppression.onUserInteraction()
+    assertFalse(service.suppression.shouldSuppressEvent(event))
   }
 
   @Test
