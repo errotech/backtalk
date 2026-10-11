@@ -333,8 +333,9 @@ public class ScreenFeedbackManager
 
       Feedback feedback = new Feedback();
 
-      // Keep window interpretation and focus restoration intact; only omit automatic wake speech.
-      if (ScreenOnSpeechSuppression.isSuppressing(service)) {
+      // Only verified lock-screen System UI feedback is quiet; mixed/unknown windows still speak.
+      ScreenOnSpeechSuppression wakeSuppression = ScreenOnSpeechSuppression.from(service);
+      if (wakeSuppression != null && wakeSuppression.shouldSuppressWindow(interpretation)) {
         return feedback;
       }
 

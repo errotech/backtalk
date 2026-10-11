@@ -16,34 +16,72 @@
 
 package com.google.android.accessibility.talkback.monitor
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.os.SystemClock
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
+import androidx.core.content.ContextCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
+import com.google.android.accessibility.talkback.PackageNameProvider
 import com.google.android.accessibility.talkback.TalkBackService
 import com.google.android.accessibility.talkback.UserInterface.UserInputEventListener
 import com.google.android.accessibility.talkback.focusmanagement.record.FocusActionInfo
+import com.google.android.accessibility.utils.AccessibilityWindowInfoUtils.WINDOW_ID_NONE
 import com.google.android.accessibility.utils.Performance.EventId
+import com.google.android.accessibility.utils.input.WindowEventInterpreter
 import com.google.android.accessibility.utils.monitor.DisplayMonitor.DisplayStateChangedListener
+import com.google.android.accessibility.utils.monitor.ScreenMonitor
 
 /**
  * A wake can produce several window changes, announcements, and focus events. Keep automatic
- * feedback quiet throughout that sequence, until the user starts interacting. This does not mute
- * the speech controller: selected status, unlock speech, and notifications use their normal paths.
+ * lock-screen System UI feedback quiet for at most three seconds. Unlocking or interacting ends
+ * suppression immediately. Other apps and unknown window owners always keep their normal speech.
  */
 class ScreenOnSpeechSuppression(
   private val prefs: SharedPreferences,
   initiallyScreenOn: Boolean,
   private val isWear: Boolean = false,
+  private val isLocked: () -> Boolean = { false },
+  private val isCallActive: () -> Boolean = { false },
+  private val activePackage: () -> CharSequence? = { null },
+  private val windowPackage: (Int) -> CharSequence? = { null },
+  private val emergencyPackage: () -> String? = { null },
+  private val now: () -> Long = { SystemClock.uptimeMillis() },
 ) : DisplayStateChangedListener, RingerModeAndScreenMonitor.ScreenChangedListener,
   UserInputEventListener {
   private var screenOn = initiallyScreenOn
-  private var waitingForInteraction = false
+  private var suppressUntil: Long? = null
+  private var receiverContext: Context? = null
+  private val unlockReceiver = object : BroadcastReceiver() {
+    override fun onReceive(context: Context?, intent: Intent?) {
+      if (intent?.action == Intent.ACTION_USER_PRESENT) onDeviceUnlocked()
+    }
+  }
+
+  fun registerUnlockReceiver(context: Context) {
+    if (receiverContext != null) return
+    ContextCompat.registerReceiver(context, unlockReceiver, IntentFilter(Intent.ACTION_USER_PRESENT),
+      ContextCompat.RECEIVER_NOT_EXPORTED)
+    receiverContext = context
+  }
+
+  fun shutdown() {
+    receiverContext?.unregisterReceiver(unlockReceiver)
+    receiverContext = null
+    onUserInteraction()
+  }
 
   override fun onDisplayStateChanged(displayOn: Boolean) {
     if (displayOn != screenOn) {
       screenOn = displayOn
-      waitingForInteraction = displayOn
+      suppressUntil = if (displayOn && !isWear && isLocked() && !isCallActive() &&
+        ScreenAnnouncementSettings.isOn(prefs, ScreenAnnouncementSettings.SUPPRESS_EXTRA_SCREEN_ON_SPEECH)) {
+        now() + WAKE_SUPPRESSION_MS
+      } else null
     }
   }
 
@@ -51,12 +89,23 @@ class ScreenOnSpeechSuppression(
     onDisplayStateChanged(isInteractive)
   }
 
-  fun isSuppressing(): Boolean =
-    !isWear && waitingForInteraction &&
-      ScreenAnnouncementSettings.isOn(prefs, ScreenAnnouncementSettings.SUPPRESS_EXTRA_SCREEN_ON_SPEECH)
+  fun isSuppressing(): Boolean {
+    val deadline = suppressUntil ?: return false
+    if (isWear || !isLocked() || isCallActive() || now() >= deadline ||
+      !ScreenAnnouncementSettings.isOn(prefs, ScreenAnnouncementSettings.SUPPRESS_EXTRA_SCREEN_ON_SPEECH)) {
+      suppressUntil = null
+      return false
+    }
+    return isEligiblePackage(activePackage())
+  }
+
+  private fun isEligiblePackage(packageName: CharSequence?): Boolean =
+    packageName?.toString() == SYSTEM_UI && packageName.toString() != emergencyPackage()
+
+  fun onDeviceUnlocked() = onUserInteraction()
 
   fun onUserInteraction() {
-    waitingForInteraction = false
+    suppressUntil = null
   }
 
   override fun touchInteractionState(active: Boolean) {
@@ -88,7 +137,7 @@ class ScreenOnSpeechSuppression(
 
   /** Focus can arrive without Backtalk's action history; System UI also posts later live updates. */
   fun shouldSuppressEvent(event: AccessibilityEvent): Boolean {
-    if (!isSuppressing()) return false
+    if (!isSuppressing() || !isEligiblePackage(event.packageName)) return false
     return when (event.eventType) {
       AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED,
       AccessibilityEvent.TYPE_VIEW_FOCUSED -> true
@@ -97,18 +146,49 @@ class ScreenOnSpeechSuppression(
       AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED,
       AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
       AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-      AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> event.packageName?.toString() == "com.android.systemui"
+      AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> true
       else -> false
     }
   }
 
+  /** Only automatic focus in the verified lock-screen package is quiet, never user navigation. */
+  fun shouldSuppressFocus(node: AccessibilityNodeInfoCompat, info: FocusActionInfo): Boolean =
+    isSuppressing() && isEligiblePackage(node.packageName) && info.sourceAction in listOf(
+      FocusActionInfo.SCREEN_STATE_CHANGE, FocusActionInfo.FOCUS_SYNCHRONIZATION,
+      FocusActionInfo.ENSURE_ON_SCREEN,
+    )
+
+  /** Mixed or unidentified window changes must remain audible, including IME and other apps. */
+  fun shouldSuppressWindow(interpretation: WindowEventInterpreter.EventInterpretation): Boolean {
+    if (!isSuppressing() || interpretation.shouldAnnounceInputMethodChange ||
+      interpretation.isWebDialogOpenedEvent) return false
+    val announcement = interpretation.announcement
+    if (announcement != null && !isEligiblePackage(announcement.packageName())) return false
+    val windows = listOf(interpretation.windowA, interpretation.windowB,
+      interpretation.otherActiveWindow, interpretation.picInPic, interpretation.eventSourceWindow)
+      .filter { it.id != WINDOW_ID_NONE }
+    if (windows.any { !isEligiblePackage(windowPackage(it.id)) }) return false
+    if (interpretation.mainWindowsChanged && windows.isEmpty()) return false
+    return announcement != null || windows.isNotEmpty()
+  }
   companion object {
+    const val WAKE_SUPPRESSION_MS = 3_000L
+    private const val SYSTEM_UI = "com.android.systemui"
+
+    @JvmStatic
+    fun create(service: TalkBackService, prefs: SharedPreferences, initiallyScreenOn: Boolean,
+      isWear: Boolean): ScreenOnSpeechSuppression = ScreenOnSpeechSuppression(
+      prefs, initiallyScreenOn, isWear,
+      isLocked = { ScreenMonitor.isDeviceLocked(service) },
+      isCallActive = { service.isPhoneCallActive },
+      activePackage = { service.rootInActiveWindow?.packageName },
+      windowPackage = { id -> service.windows.firstOrNull { it.id == id }?.root?.packageName },
+      emergencyPackage = { PackageNameProvider.getCellBroadcastReceiverPackageName() },
+    )
     /** All speech paths share the service's wake state, rather than independent one-shot flags. */
     @JvmStatic
     fun from(context: Context): ScreenOnSpeechSuppression? =
       (context as? TalkBackService)?.screenOnSpeechSuppression
 
-    @JvmStatic
-    fun isSuppressing(context: Context): Boolean = from(context)?.isSuppressing() == true
   }
 }

@@ -177,6 +177,7 @@ import com.google.android.accessibility.talkback.focusmanagement.TraversalTreeCa
 import com.google.android.accessibility.talkback.focusmanagement.interpreter.ScreenStateMonitor;
 import com.google.android.accessibility.talkback.focusmanagement.interpreter.TouchExplorationInterpreter;
 import com.google.android.accessibility.talkback.focusmanagement.record.AccessibilityFocusActionHistory;
+import com.google.android.accessibility.talkback.focusmanagement.record.FocusActionInfo;
 import com.google.android.accessibility.talkback.gesture.GestureController;
 import com.google.android.accessibility.talkback.gesture.GestureHistory;
 import com.google.android.accessibility.talkback.gesture.GestureShortcutMapping;
@@ -937,6 +938,9 @@ public class TalkBackService extends AccessibilityServiceCompat
   public void onDestroy() {
     if (userInterface != null) {
       userInterface.unregisterAllListeners();
+    }
+    if (screenOnSpeechSuppression != null) {
+      screenOnSpeechSuppression.shutdown();
     }
 
     if (eventLatencyLogger != null) {
@@ -1993,12 +1997,14 @@ public class TalkBackService extends AccessibilityServiceCompat
     // supportsTouchScreen = packageManager.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN);
     displayMonitor = new DisplayMonitor(this);
     screenOnSpeechSuppression =
-        new ScreenOnSpeechSuppression(
+        ScreenOnSpeechSuppression.create(
+            this,
             prefs,
             getSystemService(android.hardware.display.DisplayManager.class)
                     .getDisplay(Display.DEFAULT_DISPLAY).getState()
                 == Display.STATE_ON,
             FormFactorUtils.isAndroidWear());
+    screenOnSpeechSuppression.registerUnlockReceiver(this);
     // Register first so wake feedback and focus listeners observe the same display transition.
     displayMonitor.addDisplayStateChangedListener(screenOnSpeechSuppression);
     accessibilityEventProcessor = new AccessibilityEventProcessor(this, displayMonitor);
@@ -2491,9 +2497,13 @@ public class TalkBackService extends AccessibilityServiceCompat
     focuser.setFocusSetListener(
         (node, info, eventId, actionTime) -> {
           screenOnSpeechSuppression.onFocusAction(info);
+          FocusActionInfo speechInfo =
+              screenOnSpeechSuppression.shouldSuppressFocus(node, info)
+                  ? new FocusActionInfo.Builder(info).setForceMuteFeedback(true).build()
+                  : info;
           eventFilter.onAccessibilityFocusSet(
               node,
-              info,
+              speechInfo,
               eventId,
               actionTime,
               /* continuousReading= */ fullScreenReadActor != null

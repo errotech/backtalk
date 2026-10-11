@@ -22,14 +22,12 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import com.google.android.accessibility.talkback.TalkBackService
-import com.google.android.accessibility.talkback.actor.helper.FocusActorHelper
 import com.google.android.accessibility.talkback.compositor.Compositor
 import com.google.android.accessibility.talkback.compositor.EarlyFocusSpeech
 import com.google.android.accessibility.talkback.compositor.EventFilter
 import com.google.android.accessibility.talkback.compositor.EventInterpretation
 import com.google.android.accessibility.talkback.compositor.GlobalVariables
 import com.google.android.accessibility.talkback.eventprocessor.ProcessorPhoneticLetters
-import com.google.android.accessibility.talkback.focusmanagement.interpreter.ScreenState
 import com.google.android.accessibility.talkback.focusmanagement.record.FocusActionInfo
 import com.google.android.accessibility.talkback.monitor.ScreenAnnouncementSettings
 import com.google.android.accessibility.talkback.monitor.ScreenOnSpeechSuppression
@@ -63,6 +61,18 @@ class ScreenOnSuppressionTest {
 
   private lateinit var service: TestService
   private lateinit var composer: ScreenFeedbackManager.FeedbackComposer
+  private var locked = true
+  private var callActive = false
+  private var foreground: String? = "com.android.systemui"
+  private var elapsed = 0L
+  private var emergency: String? = "example.cellbroadcast"
+  private val windowPackages = mutableMapOf<Int, String>()
+
+  private fun policy(initiallyOn: Boolean = false) = ScreenOnSpeechSuppression(
+    SharedPreferencesUtils.getSharedPreferences(service), initiallyOn,
+    isLocked = { locked }, isCallActive = { callActive }, activePackage = { foreground },
+    windowPackage = { windowPackages[it] }, emergencyPackage = { emergency }, now = { elapsed },
+  )
 
   @Before
   fun setUp() {
@@ -70,7 +80,7 @@ class ScreenOnSuppressionTest {
     FormFactorUtils.initialize(service)
     SharedPreferencesUtils.getSharedPreferences(service).edit().clear().commit()
     service.suppression =
-      ScreenOnSpeechSuppression(SharedPreferencesUtils.getSharedPreferences(service), false)
+      policy()
     composer = ScreenFeedbackManager.FeedbackComposer(service, null, null)
   }
 
@@ -107,30 +117,28 @@ class ScreenOnSuppressionTest {
 
   @Test
   fun automaticFocusRemainsMutedAfterTheFirstWakeFlagIsConsumed() {
-    val node = AccessibilityNodeInfoCompat.obtain()
-    val state = ScreenState(null, null, 0, true)
-    assertFalse(FocusActorHelper.shouldMuteFeedbackForFocusedNode(service, node, state))
+    val node = AccessibilityNodeInfoCompat.obtain().apply { packageName = "com.android.systemui" }
+    val restored = FocusActionInfo.builder().setSourceAction(FocusActionInfo.SCREEN_STATE_CHANGE).build()
+    assertFalse(service.suppression.shouldSuppressFocus(node, restored))
     suppress(true)
     service.suppression.onDisplayStateChanged(true)
-    assertTrue(FocusActorHelper.shouldMuteFeedbackForFocusedNode(service, node, state))
-    // A failed restoration must allow the next automatic focus strategy to use the same policy.
-    assertTrue(state.isInterpretFirstTimeWhenWakeUp)
-    assertTrue(FocusActorHelper.shouldMuteFeedbackForFocusedNode(service, node, state))
-    state.consumeInterpretFirstTimeWhenWakeUp()
-    assertTrue(FocusActorHelper.shouldMuteFeedbackForFocusedNode(service, node, state))
-    assertTrue(FocusActorHelper.shouldMuteFeedbackForFocusedNode(service, node, null))
+    for (source in listOf(FocusActionInfo.SCREEN_STATE_CHANGE, FocusActionInfo.FOCUS_SYNCHRONIZATION,
+      FocusActionInfo.ENSURE_ON_SCREEN)) {
+      val info = FocusActionInfo.builder().setSourceAction(source).build()
+      assertTrue(service.suppression.shouldSuppressFocus(node, info))
+      node.packageName = "example.cellbroadcast"
+      assertFalse(service.suppression.shouldSuppressFocus(node, info))
+      node.packageName = "com.android.systemui"
+    }
     // User navigation clears suppression before its feedback is composed, including braille.
     service.suppression.onFocusAction(
       FocusActionInfo.builder().setSourceAction(FocusActionInfo.LOGICAL_NAVIGATION).build()
     )
-    assertFalse(FocusActorHelper.shouldMuteFeedbackForFocusedNode(service, node, state))
-    assertFalse(FocusActorHelper.shouldMuteFeedbackForFocusedNode(service, node, null))
+    assertFalse(service.suppression.shouldSuppressFocus(node, restored))
     // A later wake is independently suppressed.
     service.suppression.onDisplayStateChanged(false)
     service.suppression.onDisplayStateChanged(true)
-    assertTrue(
-      FocusActorHelper.shouldMuteFeedbackForFocusedNode(service, node, ScreenState(null, null, 1, true))
-    )
+    assertTrue(service.suppression.shouldSuppressFocus(node, restored))
   }
 
   private fun rawEvent(type: Int, packageName: String = "com.android.systemui") =
@@ -152,7 +160,7 @@ class ScreenOnSuppressionTest {
   }
 
   @Test
-  fun wakeSuppressionDoesNotDependOnCarrierTextOrWindowAnnouncementPackage() {
+  fun carrierTextDoesNotAffectSuppressionAndVendorAppsKeepTheirAnnouncements() {
     suppress(true)
     service.suppression.onDisplayStateChanged(true)
     for (label in listOf("Example Mobile", "Emergency calls only", "オペレーター", "")) {
@@ -165,11 +173,11 @@ class ScreenOnSuppressionTest {
         val event = rawEvent(type).apply { text.add(label) }
         assertTrue(service.suppression.shouldSuppressEvent(event))
       }
-      // Window feedback is suppressed even when a manufacturer uses another package.
+      // An unverified vendor lock-screen app must keep its speech.
       val window = WindowEventInterpreter.EventInterpretation().apply {
         setAnnouncement(WindowEventInterpreter.Announcement.create(label, "example.vendor.lockscreen", false, false))
       }
-      assertTrue(composer.composeFeedback(window, 0).isEmpty)
+      assertFalse(service.suppression.shouldSuppressWindow(window))
     }
     service.suppression.onUserInteraction()
     val selection = rawEvent(AccessibilityEvent.TYPE_VIEW_SELECTED).apply { text.add("Example Mobile") }
@@ -250,6 +258,111 @@ class ScreenOnSuppressionTest {
   }
 
   @Test
+  fun timeoutIsBoundedAndDuplicateWakeDoesNotExtendIt() {
+    suppress(true)
+    service.suppression.onDisplayStateChanged(true)
+    elapsed = 2_999L
+    assertTrue(service.suppression.isSuppressing())
+    service.suppression.onDisplayStateChanged(true)
+    elapsed = 3_000L
+    assertFalse(service.suppression.isSuppressing())
+    assertFalse(composer.composeFeedback(announcement(false), 0).isEmpty)
+    service.suppression.onDisplayStateChanged(false)
+    service.suppression.onDisplayStateChanged(true)
+    assertTrue(service.suppression.isSuppressing())
+  }
+
+  @Test
+  fun unlockWithoutTouchEndsSuppressionAndRelockingDoesNotRearmIt() {
+    suppress(true)
+    service.suppression.onDisplayStateChanged(true)
+    locked = false
+    assertFalse(service.suppression.isSuppressing())
+    locked = true
+    assertFalse(service.suppression.isSuppressing())
+    service.suppression.onDisplayStateChanged(false)
+    service.suppression.onDisplayStateChanged(true)
+    service.suppression.registerUnlockReceiver(service)
+    service.sendBroadcast(android.content.Intent(android.content.Intent.ACTION_USER_PRESENT))
+    shadowOf(android.os.Looper.getMainLooper()).idle()
+    assertFalse(service.suppression.isSuppressing())
+    service.suppression.shutdown()
+    service.suppression.shutdown()
+    service.suppression.onDisplayStateChanged(false)
+    locked = false
+    service.suppression.onDisplayStateChanged(true)
+    assertFalse(service.suppression.isSuppressing())
+  }
+
+  @Test
+  fun otherAppsAndUnknownOwnersKeepFocusAndWindowSpeech() {
+    suppress(true)
+    service.suppression.onDisplayStateChanged(true)
+    val info = FocusActionInfo.builder().setSourceAction(FocusActionInfo.SCREEN_STATE_CHANGE).build()
+    for (owner in listOf("example.incall", "example.clock", "example.timer", "example.cellbroadcast", null)) {
+      val node = AccessibilityNodeInfoCompat.obtain().apply { packageName = owner }
+      assertFalse(service.suppression.shouldSuppressFocus(node, info))
+      val event = rawEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED).apply { packageName = owner }
+      assertFalse(service.suppression.shouldSuppressEvent(event))
+      val window = WindowEventInterpreter.EventInterpretation().apply {
+        setAnnouncement(WindowEventInterpreter.Announcement.create("Alert", owner, false, false))
+      }
+      assertFalse(service.suppression.shouldSuppressWindow(window))
+      assertFalse(composer.composeFeedback(window, 0).isEmpty)
+      val appWindow = WindowEventInterpreter.EventInterpretation().apply {
+        setMainWindowsChanged(true)
+        windowA.setId(10)
+        windowA.setTitleForFeedback("Alarm or emergency alert")
+      }
+      if (owner == null) windowPackages.remove(10) else windowPackages[10] = owner
+      assertFalse(composer.composeFeedback(appWindow, 0).isEmpty)
+      foreground = owner
+      assertFalse(service.suppression.shouldSuppressEvent(rawEvent(AccessibilityEvent.TYPE_ANNOUNCEMENT)))
+      foreground = "com.android.systemui"
+    }
+    // Even a receiver configured to use System UI must never have its emergency speech muted.
+    emergency = "com.android.systemui"
+    assertFalse(service.suppression.shouldSuppressEvent(rawEvent(AccessibilityEvent.TYPE_ANNOUNCEMENT)))
+  }
+
+  @Test
+  fun incomingCallEndsSuppressionEvenIfSystemUiStaysInFront() {
+    suppress(true)
+    service.suppression.onDisplayStateChanged(true)
+    callActive = true
+    assertFalse(service.suppression.isSuppressing())
+    callActive = false
+    assertFalse(service.suppression.isSuppressing())
+    service.suppression.onDisplayStateChanged(false)
+    callActive = true
+    service.suppression.onDisplayStateChanged(true)
+    assertFalse(service.suppression.isSuppressing())
+  }
+
+  @Test
+  fun mixedWindowsAndKeyboardChangesAreNotSuppressed() {
+    suppress(true)
+    service.suppression.onDisplayStateChanged(true)
+    val window = WindowEventInterpreter.EventInterpretation().apply {
+      setMainWindowsChanged(true)
+      windowA.setId(1)
+    }
+    assertFalse(service.suppression.shouldSuppressWindow(window))
+    windowPackages[1] = "com.android.systemui"
+    assertTrue(service.suppression.shouldSuppressWindow(window))
+    window.windowB.setId(2)
+    windowPackages[2] = "example.clock"
+    assertFalse(service.suppression.shouldSuppressWindow(window))
+    windowPackages[2] = "com.android.systemui"
+    window.picInPic.setId(3)
+    windowPackages[3] = "example.timer"
+    assertFalse(service.suppression.shouldSuppressWindow(window))
+    window.picInPic.setId(-1)
+    window.setShouldAnnounceInputMethodChange(true)
+    assertFalse(service.suppression.shouldSuppressWindow(window))
+  }
+
+  @Test
   fun suppressionPreferenceIsVisibleOnPhonesAndHiddenOnWear() {
     for (wear in listOf(false, true)) {
       shadowOf(service.packageManager).setSystemFeature(android.content.pm.PackageManager.FEATURE_WATCH, wear)
@@ -269,7 +382,7 @@ class ScreenOnSuppressionTest {
   @Test
   fun startingTheServiceWithTheScreenOnDoesNotSilenceNavigation() {
     suppress(true)
-    val suppression = ScreenOnSpeechSuppression(SharedPreferencesUtils.getSharedPreferences(service), true)
+    val suppression = policy(initiallyOn = true)
     suppression.onDisplayStateChanged(true)
     assertFalse(suppression.isSuppressing())
     suppression.onDisplayStateChanged(false)
