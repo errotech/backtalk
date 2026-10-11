@@ -107,6 +107,10 @@ public class SpeechControllerImpl implements SpeechController {
     @Nullable CharSequence filter(CharSequence text);
   }
 
+  /**
+   * Backtalk: marks speech from a script or another app, which sets its own rate and pitch and is
+   * said as given, without Backtalk's speech filter.
+   */
   public static final String SPEECH_PARAM_FROM_SCRIPT = "backtalk.fromScript";
 
   private static volatile @Nullable SpeechFilter speechFilter;
@@ -1733,6 +1737,41 @@ public class SpeechControllerImpl implements SpeechController {
     }
   }
 
+  /**
+   * Backtalk: stops the speech in {@code utteranceGroup}, whether queued or speaking, and leaves
+   * all other speech as it is, so that speech another app asked for can be stopped without
+   * stopping Backtalk's own.
+   */
+  public void stopUtteranceGroup(@UtteranceGroup int utteranceGroup) {
+    if (!mHandler.getLooper().isCurrentThread()) {
+      mHandler.post(() -> stopUtteranceGroup(utteranceGroup));
+      return;
+    }
+    ListIterator<FeedbackItem> iterator = feedbackQueue.listIterator(0);
+    while (iterator.hasNext()) {
+      FeedbackItem item = iterator.next();
+      if (item.getUtteranceGroup() == utteranceGroup) {
+        iterator.remove();
+        notifyItemInterrupted(item);
+      }
+    }
+    if (currentFeedbackItem == null || currentFeedbackItem.getUtteranceGroup() != utteranceGroup) {
+      return;
+    }
+    notifyItemInterrupted(currentFeedbackItem);
+    currentFragmentIterator = null;
+    // Stopped before the next item starts, which would otherwise queue behind it.
+    failoverTts.stopFromTalkBack();
+    if (!feedbackQueue.isEmpty()) {
+      speakNextItem();
+    } else {
+      final String utteranceId = currentFeedbackItem.getUtteranceId();
+      onFragmentCompleted(
+          utteranceId, /* success= */ false, /* advance= */ true, /* notifyObserver= */ true);
+      currentFeedbackItem = null;
+    }
+  }
+
   @NonNull
   public String getTtsSubAppId() {
     return ttsSubAppId;
@@ -2036,11 +2075,13 @@ public class SpeechControllerImpl implements SpeechController {
           params.get("com.google.android.tts:SubapplicationIdentifierId"));
     }
 
+    final float volume = speechVolume * parseFloatParam(params, SpeechParam.VOLUME, 1);
+
     // Utterance ID, stream, and volume override item params.
     final int stream = FailoverTextToSpeech.getSpeechAudioStream(mContext);
     params.put(Engine.KEY_PARAM_UTTERANCE_ID, feedbackItem.getUtteranceId());
     params.put(Engine.KEY_PARAM_STREAM, String.valueOf(stream));
-    params.put(Engine.KEY_PARAM_VOLUME, String.valueOf(speechVolume));
+    params.put(Engine.KEY_PARAM_VOLUME, String.valueOf(volume));
     HashMap<String, Integer> customFlags = new HashMap<>();
 
     if (feedbackItem.hasFlag(FeedbackItem.FLAG_CHUNKING_APPLIED)) {
@@ -2113,7 +2154,7 @@ public class SpeechControllerImpl implements SpeechController {
         params,
         customFlags,
         stream,
-        speechVolume,
+        volume,
         preventDeviceSleep,
         feedbackItem.shouldFlushGlobalTtsQueue(),
         eventId);

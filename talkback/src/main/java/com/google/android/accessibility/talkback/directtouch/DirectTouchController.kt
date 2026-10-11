@@ -151,12 +151,35 @@ class DirectTouchController(
 
   override fun onScreenChanged(isInteractive: Boolean, eventId: EventId?) {
     screenInteractive = isInteractive
-    evaluate()
+    onScreenStateChanged()
   }
 
   override fun onDisplayStateChanged(displayOn: Boolean) {
     this.displayOn = displayOn
-    evaluate()
+    onScreenStateChanged()
+  }
+
+  /**
+   * Looks again after the screen turns on or off, without asking apps for their windows' contents
+   * while the screen is changing. A watch's screen changes all the time, as the wrist turns, and
+   * that work blocked the main thread for hundreds of milliseconds. The app in front is the same as
+   * before, so with the screen off, direct touch only has to end, and with it on, there is nothing
+   * to do unless direct touch can turn on, and then it waits until the screen has settled.
+   */
+  private fun onScreenStateChanged() {
+    if (!screenInteractive || !displayOn) {
+      handler.removeCallbacks(reevaluate)
+      if (active) {
+        active = false
+        clearRegion()
+        navBarRegionSent = false
+        announce(false)
+      }
+      return
+    }
+    if (isNavBarDirect() || DirectTouchSettings.hasEnabledApps(prefs)) {
+      scheduleEvaluate()
+    }
   }
 
   /**

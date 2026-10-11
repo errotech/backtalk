@@ -359,7 +359,7 @@ In **Verbosity** > **Screen on and off**, you can choose what Backtalk says when
 
 On phones, at the end of **When the screen turns on**, **Say only the items above** limits automatic System UI lock-screen wake speech to the time and status items you selected. It skips extra lock-screen information, such as the carrier and Extend Unlock, and the automatically restored lock-screen focused item. Focus still returns, and swiping or touching items speaks normally. With no screen-on items selected, the initial lock-screen wake announcement is silent. This option is off by default and is hidden and inactive on Wear OS. The separate **Say "Device unlocked"** switch still controls the unlock announcement.
 
-Some phones send several lock-screen announcements and focus events as they wake. Suppression ends when the device unlocks, you start interacting, the screen turns off, or three seconds pass. System UI and keyguard are identified using Android's configuration, rather than device-specific package names. Unlocked wakes, other apps, incoming calls, alarms, timers, emergency alerts, notifications, and unknown window owners keep their normal speech. The selected time and status announcements still speak normally. Actual device testing has been limited to a Samsung Galaxy S23 Plus; behavior on non-Samsung phones, including Pixels, has not been verified.
+Some phones send several lock-screen announcements and focus events as they wake. Suppression ends when the device unlocks, you start interacting, the screen turns off, or three seconds pass. System UI and keyguard are identified using Android's configuration, rather than device-specific package names. Unlocked wakes, other apps, incoming calls, alarms, timers, emergency alerts, notifications, and unknown window owners keep their normal speech. The selected time and status announcements still speak normally. Device testing has covered a Samsung Galaxy S23 Plus and a Galaxy S5 running Lineage OS 20; behavior on non-Samsung phones, including Pixels, has not been verified.
 
 These switches are separate from **Status readout**, so the status gesture can say different things. Backtalk doesn't make the screen-on announcement during calls, and the lock screen no longer cuts off "Screen off".
 
@@ -507,13 +507,23 @@ Like NVDA's app modules and global plugins, scripts change how Backtalk works in
 *   Change everything Backtalk says, and react to notifications, typing and screen changes.
 *   Use the internet and the clipboard, show dialogs, and keep its own data and settings.
 
-To install a script, go to **Advanced settings** > **Scripts** and choose **Import script**. Backtalk lists what the script asks to do before it installs or updates it. **Add the example script** adds a small script to start from.
+To install a script, go to **Advanced settings** > **Scripts** and choose **Import script**. You can also share a script file, or a link to one such as a script's page on GitHub, to Backtalk, or open a script file with it, and choose **Install Backtalk script**. Backtalk lists what the script asks to do before it installs or updates it. **Add the example script** adds a small script to start from.
 
 Each script has a page with an on and off switch, a switch for each permission and for each gesture, key, menu item and reading control it adds, its settings on their own screen, its log, and **Remove**. While a script runs, its gestures and keys come before Backtalk's.
 
 Scripts never change Backtalk's own screens, so the Scripts screen always works. **Turn off all scripts** on that screen stops every script at once, and so does the **Turn all scripts on or off** action, which you can assign to a gesture that scripts can't take over. Scripts don't run while the screen is off or Backtalk is paused, and Backtalk only starts the script engine once a script is turned on.
 
+Speech requested with `backtalk.speak` can be heard while media is playing, including queued and interrupting requests. The script still needs the Speech permission, and muting speech, recording, voice recognition and phone calls retain their existing speech policy.
+
+Hooks that change or suppress speech take priority over queued script work and share a 30-millisecond deadline. If the deadline expires or a long task is already running, Backtalk uses its normal speech, so scripts should keep these hooks fast.
+
 Scripts run on phones and tablets only. [Writing Backtalk scripts](docs/scripting.md) describes the whole API, and [docs/scripting/examples](docs/scripting/examples) has a script to start from.
+
+### Speech from other apps
+
+Apps can ask Backtalk to say text in your own Backtalk voice, for example a game, an automation app such as Tasker, or a remote-access tool. To allow this, turn on **Advanced settings** > **Let other apps speak**. It's off by default.
+
+The first time an app asks, Backtalk posts a notification that asks whether to allow it, and nothing the app sends is said until you choose **Allow**. You can allow or block each app later in **Let other apps speak**. A short sound plays before each thing another app says, so you can tell it apart from Backtalk. Nothing is said while the device is locked, an app can speak only a few times in a row, and apps can never stop or cut off Backtalk's own speech. [Speaking through Backtalk from another app](docs/speech-api.md) describes the API for app developers.
 
 ### Inspect focused item and Copy screen tree
 
