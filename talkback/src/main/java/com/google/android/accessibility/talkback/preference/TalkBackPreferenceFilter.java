@@ -197,6 +197,13 @@ public class TalkBackPreferenceFilter {
     // A TV has no touchscreen for direct touch, and no gesture for the status readout.
     DIRECT_TOUCH(R.string.pref_direct_touch_key, HIDDEN_ON_WATCH | HIDDEN_ON_TV),
     STATUS_READOUT(R.string.pref_status_readout_key, HIDDEN_ON_TV),
+    // A TV has no notification shade for Backtalk's list to replace.
+    NOTIFICATION_LIST(R.string.pref_notification_list_key, HIDDEN_ON_TV),
+    NOTIFICATION_PARTS(R.string.pref_notification_parts_key, HIDDEN_ON_TV),
+    RESTORE_FOCUS(
+        R.string.pref_restore_focus_on_back_key, HIDDEN_ON_TV | HIDDEN_ON_WATCH),
+    RESTORE_FOCUS_SCROLL(
+        R.string.pref_scroll_to_restore_previous_focus_key, HIDDEN_ON_TV | HIDDEN_ON_WATCH),
     SPEECH_VOLUME(R.string.pref_speech_volume_key, HIDE_HAS_VOLUME_KEY),
     BRAILLE_KEYBOARD(
         R.string.pref_brailleime_key,
@@ -240,7 +247,6 @@ public class TalkBackPreferenceFilter {
         HIDDEN_ON_TV | HIDDEN_TYPING_LATENCY_SETTING | HIDDEN_ON_XR),
     // Developer settings
     GESTURE_HANDLING(R.string.pref_talkback_gesture_detection_key, HIDDEN_ON_TV),
-    EXPLORE_BY_TOUCH(R.string.pref_explore_by_touch_reflect_key, HIDDEN_ON_TV | HIDDEN_ON_XR),
     // Gesture/Verbosity Settings.
     CONFIG_PHYSICAL_KEYBOARD_ECHO(R.string.pref_keyboard_echo_physical_key, HIDDEN_ON_WATCH),
     INTERRUPT_TYPING(R.string.pref_interrupt_typing_key, HIDDEN_ON_WATCH),

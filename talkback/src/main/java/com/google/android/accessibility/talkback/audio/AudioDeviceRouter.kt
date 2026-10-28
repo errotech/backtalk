@@ -28,6 +28,8 @@ import android.media.AudioDeviceInfo
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioPlaybackConfiguration
+import android.media.AudioRecordingConfiguration
+import android.media.MediaRecorder
 import android.media.AudioTrack
 import android.os.Build
 import android.os.Handler
@@ -40,6 +42,7 @@ import androidx.core.content.ContextCompat
 import androidx.preference.ListPreference
 import com.google.android.accessibility.talkback.R
 import com.google.android.accessibility.utils.SharedPreferencesUtils
+import com.google.android.accessibility.utils.output.FailoverTextToSpeech
 import com.google.android.libraries.accessibility.utils.log.LogUtils
 
 /**
@@ -95,9 +98,18 @@ class AudioDeviceRouter @JvmOverloads constructor(
   private var lastEnsureRoutingTimeMs: Long = 0L
   @Volatile private var isRoutingActive: Boolean = false
   @Volatile private var isPhoneCallActive: Boolean = false
+  // Another app is listening the way a call or a voice assistant does, such as Gemini. It needs the
+  // communication device, so holding it on the speaker left Gemini unable to hear the user.
+  @Volatile private var isVoiceInputActive: Boolean = false
+  private val stepsAside: Boolean
+    get() = isPhoneCallActive || isVoiceInputActive
   private var keepAliveTrack: AudioTrack? = null
 
   private var speakerphoneSetByUs = false
+  // Whether this router asked for a communication device. Clearing one it never set still makes
+  // Android pick the communication route again, which during a call could move the call to a
+  // watch whose phone calls setting is off.
+  private var communicationDeviceSetByUs = false
   private var otherPlaybackCount = 0
   private val playbackCallback =
     object : AudioManager.AudioPlaybackCallback() {
@@ -114,6 +126,18 @@ class AudioDeviceRouter @JvmOverloads constructor(
         Log.i(TAG, "Other playback changed (count=$count), re-asserting routing")
         isRoutingActive = false
         scheduleReassertion()
+      }
+    }
+
+  private val recordingCallback =
+    object : AudioManager.AudioRecordingCallback() {
+      override fun onRecordingConfigChanged(configs: MutableList<AudioRecordingConfiguration>?) {
+        val active = isVoiceInput(configs)
+        if (active == isVoiceInputActive) return
+        isVoiceInputActive = active
+        Log.i(TAG, "Voice input ${if (active) "started" else "stopped"} in another app")
+        applyRouting()
+        if (!active) scheduleReassertion()
       }
     }
 
@@ -156,6 +180,8 @@ class AudioDeviceRouter @JvmOverloads constructor(
           R.string.pref_audio_output_device_default,
         )
       currentTarget = AudioTarget.parse(savedPref)
+      // Nothing is routed yet, whatever a previous run left behind.
+      setRouteForced(false)
       Log.i(TAG, "AudioDeviceRouter initialized with target: $currentTarget (raw pref: '$savedPref')")
       prefs.registerOnSharedPreferenceChangeListener(prefChangeListener)
     } catch (e: Exception) {
@@ -202,6 +228,8 @@ class AudioDeviceRouter @JvmOverloads constructor(
     registerCommunicationDeviceListener(am)
     registerBroadcastReceiver()
     am.registerAudioPlaybackCallback(playbackCallback, mainHandler)
+    isVoiceInputActive = isVoiceInput(am.activeRecordingConfigurations)
+    am.registerAudioRecordingCallback(recordingCallback, mainHandler)
 
     isMonitoring = true
     applyRouting()
@@ -211,7 +239,7 @@ class AudioDeviceRouter @JvmOverloads constructor(
   /** Re-evaluates and applies audio routing according to the selected target. */
   fun applyRouting() {
     val am = audioManager ?: return
-    if (isPhoneCallActive) {
+    if (stepsAside) {
       stopKeepAlive()
       clearDeviceRouting(am)
       return
@@ -225,7 +253,7 @@ class AudioDeviceRouter @JvmOverloads constructor(
         clearDeviceRouting(am)
       }
       is AudioTarget.PhoneSpeaker -> {
-        val speaker = findSpeakerDevice(am)
+        val speaker = speakerToForce(am)
         if (speaker != null) {
           startKeepAlive(speaker)
           setDeviceRouting(am, speaker, forceSpeakerOn = true)
@@ -263,7 +291,7 @@ class AudioDeviceRouter @JvmOverloads constructor(
    */
   fun ensureRouting() {
     if (currentTarget == AudioTarget.SystemDefault) return
-    if (isPhoneCallActive) return
+    if (stepsAside) return
     val now = SystemClock.uptimeMillis()
     // If routing is actively verified, throttle to avoid redundant queries.
     // If routing was dropped, bypass throttle immediately!
@@ -274,7 +302,7 @@ class AudioDeviceRouter @JvmOverloads constructor(
 
   private fun ensureRoutingInternal(force: Boolean) {
     if (currentTarget == AudioTarget.SystemDefault) return
-    if (isPhoneCallActive) return
+    if (stepsAside) return
     val am = audioManager ?: return
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -399,6 +427,7 @@ class AudioDeviceRouter @JvmOverloads constructor(
       // Do NOT call track.setVolume(0.0f)! The PCM buffer is already 100% zeros (silence).
       track.play()
       keepAliveTrack = track
+      setRouteForced(true)
       Log.i(
         TAG,
         "Keep-alive audio track started (playState=${track.playState}, maintaining active playback state in AudioDeviceBroker)",
@@ -411,6 +440,7 @@ class AudioDeviceRouter @JvmOverloads constructor(
   private fun stopKeepAlive() {
     val track = keepAliveTrack ?: return
     keepAliveTrack = null
+    setRouteForced(false)
     try {
       if (track.playState == AudioTrack.PLAYSTATE_PLAYING) {
         track.stop()
@@ -419,6 +449,18 @@ class AudioDeviceRouter @JvmOverloads constructor(
       Log.i(TAG, "Keep-alive audio track stopped")
     } catch (e: Exception) {
       Log.e(TAG, "Error stopping keep-alive audio track", e)
+    }
+  }
+
+  /**
+   * Tells speech and sounds whether Backtalk routes them, while the keep-alive track plays. Only
+   * accessibility audio follows the route, so they use the accessibility stream then, and the
+   * user's choice of stream otherwise.
+   */
+  private fun setRouteForced(forced: Boolean) {
+    val prefs = SharedPreferencesUtils.getSharedPreferences(context)
+    if (prefs.getBoolean(FailoverTextToSpeech.PREF_ROUTE_FORCED_KEY, false) != forced) {
+      prefs.edit().putBoolean(FailoverTextToSpeech.PREF_ROUTE_FORCED_KEY, forced).apply()
     }
   }
 
@@ -460,7 +502,7 @@ class AudioDeviceRouter @JvmOverloads constructor(
 
   private fun handleCommunicationDeviceChanged(device: AudioDeviceInfo?) {
     if (currentTarget == AudioTarget.SystemDefault) return
-    if (isPhoneCallActive) return
+    if (stepsAside) return
     val am = audioManager ?: return
     val targetDevice = getTargetAudioDevice()
     if (targetDevice != null && (device == null || device.id != targetDevice.id)) {
@@ -544,6 +586,7 @@ class AudioDeviceRouter @JvmOverloads constructor(
       audioDeviceCallback?.let { am.unregisterAudioDeviceCallback(it) }
       unregisterCommunicationDeviceListener(am)
       am.unregisterAudioPlaybackCallback(playbackCallback)
+      am.unregisterAudioRecordingCallback(recordingCallback)
       clearDeviceRouting(am)
     }
     unregisterBroadcastReceiver()
@@ -567,7 +610,7 @@ class AudioDeviceRouter @JvmOverloads constructor(
     val am = audioManager ?: return null
     return when (val target = currentTarget) {
       is AudioTarget.SystemDefault -> null
-      is AudioTarget.PhoneSpeaker -> findSpeakerDevice(am)
+      is AudioTarget.PhoneSpeaker -> speakerToForce(am)
       is AudioTarget.AnyExternal -> findExternalDevice(am)
       is AudioTarget.SpecificDevice -> findSpecificDevice(am, target) ?: findExternalDevice(am)
     }
@@ -587,6 +630,7 @@ class AudioDeviceRouter @JvmOverloads constructor(
           false
         }
       isRoutingActive = success
+      if (success) communicationDeviceSetByUs = true
       Log.i(TAG, "setCommunicationDevice(${device.productName} - type ${device.type}): $success")
       LogUtils.d(
         TAG,
@@ -625,8 +669,11 @@ class AudioDeviceRouter @JvmOverloads constructor(
   private fun clearDeviceRouting(am: AudioManager) {
     isRoutingActive = false
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      am.clearCommunicationDevice()
-      Log.i(TAG, "clearCommunicationDevice() executed")
+      if (communicationDeviceSetByUs) {
+        am.clearCommunicationDevice()
+        communicationDeviceSetByUs = false
+        Log.i(TAG, "clearCommunicationDevice() executed")
+      }
     } else {
       setLegacySpeakerphone(am, false)
       // If a call is active the user owns the speaker setting now; forget that it was ours.
@@ -647,6 +694,15 @@ class AudioDeviceRouter @JvmOverloads constructor(
     return allDevices.find { it.isSink && it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
       ?: allDevices.find { it.isSink && it.type == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE }
   }
+
+  /**
+   * The speaker to route to, only while headphones or another external output would take the sound
+   * otherwise. Routing goes through the communication route, which plays on the speaker with the
+   * speakerphone's tuning, noticeably quieter than the speaker as the system default. With nothing
+   * external connected, the system default is already the speaker.
+   */
+  private fun speakerToForce(am: AudioManager): AudioDeviceInfo? =
+    if (findExternalDevice(am) != null) findSpeakerDevice(am) else null
 
   @VisibleForTesting
   fun findExternalDevice(am: AudioManager): AudioDeviceInfo? {
@@ -687,6 +743,9 @@ class AudioDeviceRouter @JvmOverloads constructor(
     }
   }
 
+  /** One selectable audio output: what the user sees and what is stored in the preference. */
+  class OutputOption(val displayName: String, val prefValue: String)
+
   companion object {
     private const val TAG = "AudioDeviceRouter"
     // Gaps between re-assertion passes, covering slow Bluetooth profile switches.
@@ -696,6 +755,18 @@ class AudioDeviceRouter @JvmOverloads constructor(
     @JvmStatic
     var instance: AudioDeviceRouter? = null
       private set
+
+    /**
+     * Whether an app is listening as a call or a voice assistant does. A voice recorder, which uses
+     * the plain microphone, worked all along, so it doesn't count.
+     */
+    @VisibleForTesting
+    @JvmStatic
+    fun isVoiceInput(configs: List<AudioRecordingConfiguration>?): Boolean =
+      configs.orEmpty().any {
+        it.clientAudioSource == MediaRecorder.AudioSource.VOICE_COMMUNICATION ||
+          it.clientAudioSource == MediaRecorder.AudioSource.VOICE_RECOGNITION
+      }
 
     /** Checks whether an [AudioDeviceInfo] represents an external device. */
     fun isExternalDevice(device: AudioDeviceInfo): Boolean {
@@ -744,63 +815,82 @@ class AudioDeviceRouter @JvmOverloads constructor(
     }
 
     /**
+     * The connected external outputs, in the order Android reports them.
+     */
+    @JvmStatic
+    fun getExternalDevices(context: Context): List<AudioDeviceInfo> {
+      val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+      return audioManager?.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+        ?.filter { isExternalDevice(it) }
+        ?: emptyList()
+    }
+
+    /**
+     * The selectable audio outputs in cycling order: system default, phone speaker, then each
+     * connected external device by name.
+     */
+    @JvmStatic
+    fun getOutputOptions(context: Context): List<OutputOption> {
+      val options =
+        mutableListOf(
+          OutputOption(context.getString(R.string.value_audio_output_device_default), "default"),
+          OutputOption(context.getString(R.string.value_audio_output_device_speaker), "speaker"),
+        )
+      val seenNames = mutableSetOf<String>()
+      for (dev in getExternalDevices(context)) {
+        val displayName = getDeviceDisplayName(dev, context)
+        if (seenNames.add(displayName)) {
+          options.add(OutputOption(displayName, "device:${dev.type}:$displayName"))
+        }
+      }
+      return options
+    }
+
+    /**
+     * Returns the index in [options] of the output that the preference [value] chooses, or -1. A
+     * device matches by name when its type has changed, and "any external device" matches the first
+     * external device, which is where it routes.
+     */
+    @JvmStatic
+    fun indexOfOption(options: List<OutputOption>, value: String?): Int =
+      when (val target = AudioTarget.parse(value)) {
+        is AudioTarget.SystemDefault -> options.indexOfFirst { it.prefValue == "default" }
+        is AudioTarget.PhoneSpeaker -> options.indexOfFirst { it.prefValue == "speaker" }
+        is AudioTarget.SpecificDevice ->
+          options.indexOfFirst { it.prefValue == value || it.prefValue.endsWith(":${target.name}") }
+        is AudioTarget.AnyExternal -> options.indexOfFirst { it.prefValue.startsWith("device:") }
+      }
+
+    /**
      * Dynamically populates entries and entry values for the audio output device [ListPreference].
      */
     @JvmStatic
     fun updatePreference(preference: ListPreference, context: Context) {
-      val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager
-      val connectedDevices =
-        audioManager?.getDevices(AudioManager.GET_DEVICES_OUTPUTS) ?: emptyArray()
+      val options = getOutputOptions(context)
+      preference.entries = options.map { it.displayName }.toTypedArray()
+      preference.entryValues = options.map { it.prefValue }.toTypedArray()
 
-      val externalDevices = connectedDevices.filter { isExternalDevice(it) }
-
-      val entries = mutableListOf<CharSequence>()
-      val entryValues = mutableListOf<CharSequence>()
-
-      entries.add(context.getString(R.string.value_audio_output_device_default))
-      entryValues.add("default")
-
-      entries.add(context.getString(R.string.value_audio_output_device_speaker))
-      entryValues.add("speaker")
-
-      val seenNames = mutableSetOf<String>()
-      for (dev in externalDevices) {
-        val displayName = getDeviceDisplayName(dev, context)
-        if (seenNames.add(displayName)) {
-          entries.add(displayName)
-          entryValues.add("device:${dev.type}:$displayName")
-        }
-      }
-
-      preference.entries = entries.toTypedArray()
-      preference.entryValues = entryValues.toTypedArray()
-
-      val currentValue = preference.value
-      val currentTarget = AudioTarget.parse(currentValue)
-      val summaryText = when (currentTarget) {
-        is AudioTarget.SystemDefault ->
-          context.getString(R.string.value_audio_output_device_default)
-        is AudioTarget.PhoneSpeaker ->
-          context.getString(R.string.value_audio_output_device_speaker)
-        is AudioTarget.SpecificDevice -> {
-          val matchIndex = entryValues.indexOfFirst {
-            it.toString() == currentValue || it.toString().endsWith(":${currentTarget.name}")
-          }
-          if (matchIndex >= 0) {
-            entries[matchIndex].toString()
-          } else {
-            "${currentTarget.name} (${context.getString(R.string.value_audio_output_device_disconnected)})"
-          }
-        }
-        is AudioTarget.AnyExternal -> {
-          if (externalDevices.isNotEmpty()) {
-            getDeviceDisplayName(externalDevices.first(), context)
-          } else {
+      val currentTarget = AudioTarget.parse(preference.value)
+      preference.summary =
+        when (currentTarget) {
+          is AudioTarget.SystemDefault ->
             context.getString(R.string.value_audio_output_device_default)
+          is AudioTarget.PhoneSpeaker ->
+            context.getString(R.string.value_audio_output_device_speaker)
+          is AudioTarget.SpecificDevice -> {
+            val match = options.getOrNull(indexOfOption(options, preference.value))
+            if (match != null) {
+              match.displayName
+            } else {
+              "${currentTarget.name} (${context.getString(R.string.value_audio_output_device_disconnected)})"
+            }
+          }
+          is AudioTarget.AnyExternal -> {
+            val external = getExternalDevices(context)
+            if (external.isNotEmpty()) getDeviceDisplayName(external.first(), context)
+            else context.getString(R.string.value_audio_output_device_default)
           }
         }
-      }
-      preference.summary = summaryText
     }
   }
 }
