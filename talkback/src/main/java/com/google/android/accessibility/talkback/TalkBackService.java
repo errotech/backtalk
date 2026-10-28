@@ -178,6 +178,7 @@ import com.google.android.accessibility.talkback.focusmanagement.AccessibilityFo
 import com.google.android.accessibility.talkback.focusmanagement.FocusFeedbackMapper;
 import com.google.android.accessibility.talkback.focusmanagement.FocusProcessorForLogicalNavigation;
 import com.google.android.accessibility.talkback.focusmanagement.FocusProcessorForScreenStateChange;
+import com.google.android.accessibility.talkback.focusmanagement.ScreenFocusRestorer;
 import com.google.android.accessibility.talkback.focusmanagement.TraversalTreeCache;
 import com.google.android.accessibility.talkback.focusmanagement.interpreter.ScreenStateMonitor;
 import com.google.android.accessibility.talkback.focusmanagement.interpreter.TouchExplorationInterpreter;
@@ -847,6 +848,7 @@ public class TalkBackService extends AccessibilityServiceCompat
   private UserInterface userInterface;
   private @Nullable ScreenOnSpeechSuppression screenOnSpeechSuppression;
 
+  private @Nullable ScreenFocusRestorer screenFocusRestorer;
   private DisableTalkBackDialog disableTalkbackDialog;
 
   private Configuration lastConfiguration;
@@ -919,6 +921,9 @@ public class TalkBackService extends AccessibilityServiceCompat
 
   @Override
   public boolean onUnbind(Intent intent) {
+    if (screenFocusRestorer != null) {
+      screenFocusRestorer.shutdown();
+    }
     LogUtils.d(TAG, "onUnbind start");
     final long turningOffTime = System.currentTimeMillis();
     interruptAllFeedback(/* stopTtsSpeechCompletely= */ false);
@@ -957,6 +962,10 @@ public class TalkBackService extends AccessibilityServiceCompat
   @Override
   public void onDestroy() {
     unlockedBootHandler.removeCallbacks(checkUnlockedBoot);
+    if (screenFocusRestorer != null) {
+      screenFocusRestorer.shutdown();
+      screenFocusRestorer = null;
+    }
     if (userInterface != null) {
       userInterface.unregisterAllListeners();
     }
@@ -1137,6 +1146,9 @@ public class TalkBackService extends AccessibilityServiceCompat
     }
     Performance perf = Performance.getInstance();
     EventId eventId = perf.onEventReceived(event);
+    if (screenFocusRestorer != null) {
+      screenFocusRestorer.onAccessibilityEvent(event);
+    }
     int eventType = event.getEventType();
     TraversalTreeCache.onAccessibilityEvent(event);
     PreparedFocusSpeech.onAccessibilityEvent(event);
@@ -1362,6 +1374,9 @@ public class TalkBackService extends AccessibilityServiceCompat
   protected final boolean onKeyEvent(KeyEvent keyEvent) {
     if (screenOnSpeechSuppression != null) {
       screenOnSpeechSuppression.onKeyEvent(keyEvent);
+    }
+    if (screenFocusRestorer != null) {
+      screenFocusRestorer.onKeyEvent(keyEvent);
     }
     boolean result = onKeyEventInternal(keyEvent);
 
@@ -1615,6 +1630,9 @@ public class TalkBackService extends AccessibilityServiceCompat
     if (screenOnSpeechSuppression != null) {
       screenOnSpeechSuppression.onUserInteraction();
     }
+    if (screenFocusRestorer != null) {
+      screenFocusRestorer.onUserInteraction();
+    }
     if (processorPhoneticLetters != null) {
       processorPhoneticLetters.cancelPhoneticLetter(EVENT_ID_UNTRACKED);
     }
@@ -1626,6 +1644,9 @@ public class TalkBackService extends AccessibilityServiceCompat
     }
     if (screenOnSpeechSuppression != null) {
       screenOnSpeechSuppression.onUserInteraction();
+    }
+    if (screenFocusRestorer != null) {
+      screenFocusRestorer.onUserInteraction();
     }
     // Return before feedback, training, menus and gesture recording. Both callback overloads
     // use this entry point; ignoring an action in GestureController still reports it as handled.
@@ -2072,6 +2093,9 @@ public class TalkBackService extends AccessibilityServiceCompat
               if (screenOnSpeechSuppression != null) {
                 screenOnSpeechSuppression.onUserInteraction();
               }
+              if (screenFocusRestorer != null) {
+                screenFocusRestorer.onUserInteraction();
+              }
               Performance perf = Performance.getInstance();
               EventId eventId = perf.onFingerprintGestureEventReceived(gesture);
 
@@ -2345,6 +2369,19 @@ public class TalkBackService extends AccessibilityServiceCompat
     KeyboardActor keyboardActor = new KeyboardActor(this);
 
     // Construct pipeline.
+    SystemActionPerformer systemActionPerformer = new SystemActionPerformer(this);
+    if (!FormFactorUtils.isAndroidWear() && !FormFactorUtils.isAndroidTv()) {
+      systemActionPerformer.setBeforeActionListener(
+          action -> {
+            if (screenFocusRestorer != null) {
+              if (action == GLOBAL_ACTION_BACK) {
+                screenFocusRestorer.requestBack();
+              } else {
+                screenFocusRestorer.onUserInteraction();
+              }
+            }
+          });
+    }
     pipeline =
         new Pipeline(
             this,
@@ -2397,7 +2434,7 @@ public class TalkBackService extends AccessibilityServiceCompat
                 editor,
                 labelManager,
                 new NodeActionPerformer(),
-                new SystemActionPerformer(this),
+                systemActionPerformer,
                 languageActor,
                 passThroughModeActor,
                 new TalkBackUIActor(this),
@@ -2614,6 +2651,13 @@ public class TalkBackService extends AccessibilityServiceCompat
     // in the order they are added.
     eventFilter =
         new EventFilter(this, compositor, touchMonitor, globalVariables, earlyFocusSpeech);
+    if (!FormFactorUtils.isAndroidWear() && !FormFactorUtils.isAndroidTv()) {
+      screenFocusRestorer =
+          new ScreenFocusRestorer(
+              this, prefs, pipeline.getFeedbackReturner(), pipeline.getActorState().getFocusHistory());
+      userInterface.registerListener(screenFocusRestorer);
+      focuser.setBeforeActivationListener(screenFocusRestorer::rememberBeforeActivation);
+    }
     focuser.setFocusSetListener(
         (node, info, eventId, actionTime) -> {
           screenOnSpeechSuppression.onFocusAction(info);
@@ -2628,6 +2672,9 @@ public class TalkBackService extends AccessibilityServiceCompat
               actionTime,
               /* continuousReading= */ fullScreenReadActor != null
                   && fullScreenReadActor.isActive());
+          if (screenFocusRestorer != null) {
+            screenFocusRestorer.onFocusSet(node, info, actionTime);
+          }
         });
     eventFilter.setTargetPredictor(directionNavigationActor::predictTarget);
     eventFilter.setFingerDownSupplier(
@@ -3988,6 +4035,9 @@ public class TalkBackService extends AccessibilityServiceCompat
 
   /** Turns off, or back on, what pausing Backtalk turns off besides events and feedback. */
   private void onPauseChanged(boolean paused) {
+    if (paused && screenFocusRestorer != null) {
+      screenFocusRestorer.onUserInteraction();
+    }
     if (paused) {
       if (supportsTouchScreen) {
         requestTouchExploration(false);
