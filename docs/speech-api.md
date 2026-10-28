@@ -6,16 +6,15 @@ An app can ask Backtalk to say text in the user's own Backtalk voice, with their
 
 Nothing your app sends is said until the user allows it:
 
-1.  The user turns on **Advanced settings** > **Let other apps speak** in Backtalk. It's off by default.
+1.  The user turns on **Apps** > **Let other apps speak** in Backtalk. It's off by default.
 2.  The first time your app asks to speak, Backtalk posts a notification that asks the user whether to allow it. Until they choose **Allow**, nothing your app sends is said, and requests aren't saved for later.
-3.  The user can allow or block your app at any time in **Advanced settings** > **Let other apps speak**.
+3.  The user can allow or block your app at any time in **Apps** > **Let other apps speak**.
 
 Even for an allowed app:
 
-*   Backtalk plays a short sound before each thing your app says, so the user can always tell it apart from Backtalk's own speech.
 *   Nothing is said while the device is locked, or while Backtalk is off or paused.
 *   Each app can speak a few times at once, then about once a second. Requests beyond that are dropped.
-*   Text is said as plain text, without styling, and is cut at a word after 1,000 characters.
+*   Text is said as plain text, without styling.
 *   Interrupting and stopping only affect speech from other apps. Your app can never cut off Backtalk's own speech.
 
 Backtalk doesn't tell your app whether the user allowed it, or whether the text was said.
@@ -57,7 +56,7 @@ speech.stop()
 
 | Method | What it does |
 | --- | --- |
-| `speak(text, interrupt, rate, pitch, volume)` | Says `text` after the short sound. `rate` and `pitch` are multiples of the user's own, from 0.25 to 4. `volume` is from 0 to 1. With `interrupt`, it replaces anything other apps were saying instead of waiting for it. |
+| `speak(text, interrupt, rate, pitch, volume)` | Says `text`. `rate` and `pitch` are multiples of the user's own, from 0.25 to 4. `volume` is from 0 to 1. With `interrupt`, it replaces anything other apps were saying instead of waiting for it. |
 | `stop()` | Stops anything other apps are saying. |
 
 Both calls are one-way, so they return at once.
