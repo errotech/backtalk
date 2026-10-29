@@ -1442,7 +1442,6 @@ Verwende in deiner Antwort kein Markdown.</string>
   <string name="talkback_label">BackTalk</string>
   <string name="notifictions_in_lock_screen_notification_content">Wenn du Benachrichtigungen hören möchtest, während dein Display ausgeschaltet ist, aktiviere in den BackTalk-Einstellungen für die Ausführlichkeit die Option „Benachrichtigungen vorlesen, wenn Bildschirm aus“</string>
   <string name="title_pref_touch_activation">Berührung und Interaktion</string>
-  <string name="title_pref_status_readout">Statusanzeige</string>
   <string name="title_pref_category_typing_and_braille">Tippen und Braille</string>
   <string name="summary_pref_scripts">Passt das Verhalten von BackTalk in Apps an</string>
   <string name="title_pref_speech_control">Andere Apps sprechen lassen</string>
