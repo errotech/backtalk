@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="talkback_service_description">Wenn Backtalk aktiviert ist, erhältst du gesprochenes Feedback, sodass du dein Gerät bedienen kannst, ohne auf das Display zu sehen. Dies kann für Menschen mit Sehbehinderung oder eingeschränktem Sehvermögen hilfreich sein.\n\nSo verwendest du Backtalk:\n• Wenn du zwischen Elementen wechseln möchtest, wische nach rechts oder links.\n• Wenn du ein Element auswählen möchtest, tippe doppelt darauf.\n• Wenn du scrollen möchtest, ziehe mit zwei Fingern.\n\nSo deaktivierst du Backtalk:\n• Tippe auf den Schalter. Ein Umriss wird angezeigt. Tippe doppelt auf den Schalter.\n• Tippe in der Bestätigungsnachricht auf „Ok“. Tippe dann doppelt auf „Ok“.</string>
-  <string name="talkback_service_html_description">Wenn BackTalk aktiviert ist, erhältst du gesprochenes Feedback, sodass du dein Gerät bedienen kannst, ohne auf das Display zu sehen. BackTalk eignet sich für Situationen, in denen es schwierig ist, den Bildschirm zu sehen, oder für Personen, die damit Probleme haben.&lt;br&gt;&lt;br&gt;&lt;b&gt;So verwendest du BackTalk&lt;/b&gt;&lt;br&gt;• Wenn du zwischen Elementen wechseln möchtest, wische nach rechts oder links&lt;br&gt;• Wenn du ein Element auswählen möchtest, tippe doppelt darauf&lt;br&gt;• Wenn du scrollen möchtest, ziehe mit zwei Fingern&lt;br&gt;&lt;br&gt;&lt;b&gt;So deaktivierst du BackTalk&lt;/b&gt;&lt;br&gt;1. Tippe in den Einstellungen auf &lt;b&gt;BackTalk verwenden&lt;/b&gt;. Ein Umriss erscheint. Tippe doppelt darauf.&lt;br&gt;2. Tippe in der Bestätigungsnachricht auf &lt;b&gt;Beenden&lt;/b&gt;. Ein Umriss erscheint. Tippe doppelt darauf.</string>
+  <string name="talkback_service_html_description">Wenn Backtalk aktiviert ist, erhältst du gesprochenes Feedback, sodass du dein Gerät bedienen kannst, ohne auf das Display zu sehen. Backtalk eignet sich für Situationen, in denen es schwierig ist, den Bildschirm zu sehen, oder für Personen, die damit Probleme haben.&lt;br&gt;&lt;br&gt;&lt;b&gt;So verwendest du Backtalk&lt;/b&gt;&lt;br&gt;• Wenn du zwischen Elementen wechseln möchtest, wische nach rechts oder links&lt;br&gt;• Wenn du ein Element auswählen möchtest, tippe doppelt darauf&lt;br&gt;• Wenn du scrollen möchtest, ziehe mit zwei Fingern&lt;br&gt;&lt;br&gt;&lt;b&gt;So deaktivierst du Backtalk&lt;/b&gt;&lt;br&gt;1. Tippe in den Einstellungen auf &lt;b&gt;Backtalk verwenden&lt;/b&gt;. Ein Umriss erscheint. Tippe doppelt darauf.&lt;br&gt;2. Tippe in der Bestätigungsnachricht auf &lt;b&gt;Beenden&lt;/b&gt;. Ein Umriss erscheint. Tippe doppelt darauf.</string>
   <string name="talkback_service_summary">Mit einem Screenreader Elemente vorlesen lassen</string>
-  <string name="talkback_preferences_title">BackTalk-Einstellungen</string>
+  <string name="talkback_preferences_title">Backtalk-Einstellungen</string>
   <string name="talkback_settings_screen_title_breadcrumb">Einstellungen</string>
   <string name="tts_preferences_title">Sprachausgabe</string>
   <string name="language_options">Sprachen</string>
@@ -14,7 +14,7 @@
   <string name="label_manager_summary_title">Benutzerdefinierte Labels verwalten</string>
   <string name="label_manager_package_title">Labels für %1$s verwalten</string>
   <string name="manage_label">Label verwalten</string>
-  <string name="label_manager_no_packages_message">Zurzeit sind keine benutzerdefinierten Labels vorhanden\n\n<b>Benutzerdefinierte Labels erstellen</b>\nDu kannst eines erstellen, indem du zu einem Bild ohne Label gehst und über das BackTalk-Menü ein Label hinzufügst</string>
+  <string name="label_manager_no_packages_message">Zurzeit sind keine benutzerdefinierten Labels vorhanden\n\n<b>Benutzerdefinierte Labels erstellen</b>\nDu kannst eines erstellen, indem du zu einem Bild ohne Label gehst und über das Backtalk-Menü ein Label hinzufügst</string>
   <string name="label_manager_timestamp_text">Zuletzt geändert am %1$s</string>
   <string name="search_mode_cancel">Suche abgebrochen</string>
   <string name="notification_type_status_started">Gestartet</string>
@@ -58,7 +58,7 @@
   <string name="pref_speak_time_summary">Wenn das Display eingeschaltet wird</string>
   <string name="summary_speak_container_element_positions">Dazu gehören Informationen zum Aufrufen und Schließen von Listen, Rastern und anderen Containern</string>
   <string name="confirm_the_typing_focus_delay_reduction_dialog_title">Zu „Für Eingabe anheben“ wechseln?</string>
-  <string name="message_of_typing_focus_delay_reduction_confirm_dialog">Wenn die Fokusverzögerung beim Tippen auf weniger als 0,3 Sekunden eingestellt ist, ist das Doppeltippen zum Eingeben von Text sehr schwierig. Wähle „Wechseln“ aus, um automatisch zu „Für Eingabe anheben“ zu wechseln.\n\nWenn du „Für Eingabe anheben“ verwenden möchtest, halte den Finger gedrückt, um eine beliebige Taste auszuwählen, und hebe ihn dann an, um zu tippen.\n\nDu kannst diese Einstellung in den BackTalk-Einstellungen anpassen.</string>
+  <string name="message_of_typing_focus_delay_reduction_confirm_dialog">Wenn die Fokusverzögerung beim Tippen auf weniger als 0,3 Sekunden eingestellt ist, ist das Doppeltippen zum Eingeben von Text sehr schwierig. Wähle „Wechseln“ aus, um automatisch zu „Für Eingabe anheben“ zu wechseln.\n\nWenn du „Für Eingabe anheben“ verwenden möchtest, halte den Finger gedrückt, um eine beliebige Taste auszuwählen, und hebe ihn dann an, um zu tippen.\n\nDu kannst diese Einstellung in den Backtalk-Einstellungen anpassen.</string>
   <string name="gestures_announce_typing_focus_wont_change">Die Fokusverzögerung beim Tippen funktioniert ohne „Für Eingabe anheben“ nicht.</string>
   <string name="reset_letency_reduction_settings_dialog_title">Verzögerungseinstellungen zurücksetzen?</string>
   <string name="message_reset_letency_reduction_settings_confirm_dialog">Dadurch werden alle Verzögerungseinstellungen auf die Standardeinstellungen zurückgesetzt</string>
@@ -86,7 +86,7 @@
   <string name="title_pref_category_advanced">Erweitert</string>
   <string name="title_pref_category_others">Andere</string>
   <string name="title_pref_category_tutorial_and_help">Anleitung &amp; Hilfe</string>
-  <string name="title_pref_category_reduce_latency_summary">Mit diesen Einstellungen lässt sich die Verzögerung vor BackTalk-Ansagen reduzieren</string>
+  <string name="title_pref_category_reduce_latency_summary">Mit diesen Einstellungen lässt sich die Verzögerung vor Backtalk-Ansagen reduzieren</string>
   <string name="reset_latency_settings_title">Alle Verzögerungseinstellungen zurücksetzen</string>
   <string name="title_pref_single_tap">Zum Aktivieren einmal tippen</string>
   <string name="summary_pref_single_tap">Einmal auf ein fokussiertes Element tippen, um es zu aktivieren. Das Navigieren geht dann schneller als beim Doppeltippen.</string>
@@ -96,12 +96,12 @@
   <string name="title_pref_category_manage_gestures">Touch-Gesten</string>
   <string name="title_pref_manage_labels">Benutzerdefinierte Labels</string>
   <string name="title_pref_manage_customize_menus">Menüs bearbeiten</string>
-  <string name="title_pref_category_context_menu">BackTalk-Menü anpassen</string>
+  <string name="title_pref_category_context_menu">Backtalk-Menü anpassen</string>
   <string name="title_pref_category_selector_menu">Vorleseoptionen anpassen</string>
   <string name="title_pref_category_navigation_menu">Navigationsoptionen bearbeiten</string>
-  <string name="pref_category_context_menu_summary">Wenn du das BackTalk-Menü verwenden möchtest, tippe mit drei Fingern auf den Bildschirm. Du kannst auch nach oben und dann nach rechts oder nach unten und dann nach rechts wischen.</string>
+  <string name="pref_category_context_menu_summary">Wenn du das Backtalk-Menü verwenden möchtest, tippe mit drei Fingern auf den Bildschirm. Du kannst auch nach oben und dann nach rechts oder nach unten und dann nach rechts wischen.</string>
   <string name="pref_category_context_menu_summary_xr">Wenn du das Backtalk-Menü verwenden möchtest, drehe deine sekundäre Handfläche zu dir und ziehe die Finger zusammen.</string>
-  <string name="pref_category_context_menu_summary_single_finger">Wenn du das BackTalk-Menü verwenden möchtest, wische erst nach unten und dann nach rechts.</string>
+  <string name="pref_category_context_menu_summary_single_finger">Wenn du das Backtalk-Menü verwenden möchtest, wische erst nach unten und dann nach rechts.</string>
   <string name="pref_category_selector_menu_summary">Wenn du die Vorleseoptionen verwenden möchtest, wische mit drei Fingern nach links oder rechts. Du kannst auch mit drei Fingern nach oben oder unten wischen.</string>
   <string name="pref_category_selector_menu_summary_xr">Wenn du zwischen den Vorleseoptionen wechseln möchtest, drehe deine sekundäre Handfläche zu dir, halte deine Finger zusammengezogen, bewege sie nach rechts oder links und lass los.</string>
   <string name="pref_category_selector_menu_summary_single_finger">Wenn du die Vorleseoptionen öffnen möchtest, wische erst nach oben und dann nach unten.</string>
@@ -109,20 +109,20 @@
   <string name="title_pref_export_custom_labels">Benutzerdefinierte Labels exportieren</string>
   <string name="title_pref_help_and_feedback">Hilfe &amp; Feedback</string>
   <string name="title_pref_gup">Support für Barrierefreiheit bei Google-Produkten kontaktieren</string>
-  <string name="subtitle_pref_gup">Unterstützung bei der Nutzung von BackTalk erhalten oder Fehler melden</string>
+  <string name="subtitle_pref_gup">Unterstützung bei der Nutzung von Backtalk erhalten oder Fehler melden</string>
   <string name="pref_item_licenses">Open Source-Lizenzen</string>
   <string name="title_pref_tutorial">Anleitung</string>
   <string name="title_pref_help">Hilfe</string>
   <string name="title_pref_show_tos">Nutzungsbedingungen</string>
   <string name="title_pref_show_privacy_policy">Datenschutzerklärung</string>
   <string name="title_pref_category_fingerprint_touch_shortcuts">Gesten auf dem Fingerabdrucksensor</string>
-  <string name="title_pref_category_tutorial">BackTalk-Anleitung</string>
+  <string name="title_pref_category_tutorial">Backtalk-Anleitung</string>
   <string name="title_pref_category_help_no_tutorial">Hilfe</string>
   <string name="title_pref_category_typing">Tippen</string>
   <string name="title_pref_advanced_settings">Erweiterte Einstellungen</string>
   <string name="title_pref_show_exit_watermark">Anleitung zum Deaktivieren von Backtalk anzeigen</string>
   <string name="summary_pref_show_exit_watermark">Wenn Backtalk aktiviert ist, wird eine Nachricht angezeigt, über die du die Funktion schnell deaktivieren kannst</string>
-  <string name="talkback_exit_watermark_text">BackTalk ist aktiviert. Halte das Display mit zwei Fingern 5 Sekunden lang gedrückt, um Backtalk zu deaktivieren. Wenn du diese Meldung nicht mehr sehen möchtest, tippe mit drei Fingern, um das Backtalk-Menü zu öffnen.</string>
+  <string name="talkback_exit_watermark_text">Backtalk ist aktiviert. Halte das Display mit zwei Fingern 5 Sekunden lang gedrückt, um Backtalk zu deaktivieren. Wenn du diese Meldung nicht mehr sehen möchtest, tippe mit drei Fingern, um das Backtalk-Menü zu öffnen.</string>
   <string name="talkback_exit_watermark_hint_text">Es wird ein Banner angezeigt, das darauf hinweist, dass Backtalk aktiviert ist. Wenn du Backtalk deaktivieren möchtest, halte zwei Finger 5 Sekunden lang auf den Bildschirm. Du kannst dieses Banner in den Backtalk-Einstellungen entfernen.</string>
   <string name="reset_gesture_settings_title">Einstellungen für Touch-Gesten zurücksetzen</string>
   <string name="one_finger_gestures_title">1 Finger</string>
@@ -139,7 +139,7 @@
   <string name="pref_verbosity_preset_change">Die Ausführlichkeit wurde auf \"%1$s\" eingestellt.</string>
   <string name="pref_gesture_set_entry_0">0</string>
   <string name="pref_gesture_set_entry_1">1</string>
-  <string name="keycombo_keymap_changes_instruction_title">BackTalk-Tastaturbelegung aktualisieren</string>
+  <string name="keycombo_keymap_changes_instruction_title">Backtalk-Tastaturbelegung aktualisieren</string>
   <string name="keycombo_keymap_changes_activity_content">Wechsle zur weiteren Nutzung von Tastenkombinationen in den Einstellungen von der klassischen zur Standardtastaturbelegung.
       &lt;br&gt;&lt;br&gt;&lt;b&gt;Was ist an der Standardbelegung anders?&lt;/b&gt;
       &lt;br&gt;&lt;br&gt;&lt;ul&gt;&lt;li&gt;Es gibt mehr Aktionen für Navigation und Webnavigation.&lt;/li&gt;
@@ -155,7 +155,7 @@
   <string name="keycombo_new_keymap_notification_dialog_message_for_classic_keymap">Du verwendest jetzt die standardmäßige Backtalk-Tastaturbelegung. Es gibt auch eine neue, erweiterte Tastaturbelegung mit vielen neuen Befehlen. Du kannst sie über die Einstellungen aufrufen oder dir weitere Infos in der Hilfe ansehen.</string>
   <string name="keycombo_new_keymap_notification_dialog_title_for_default_keymap">Neue Tastaturbelegung verfügbar</string>
   <string name="keycombo_new_keymap_notification_dialog_message_for_default_keymap">Die neue, erweiterte Backtalk-Tastaturbelegung bietet viele neue Befehle. Du kannst sie über die Einstellungen aufrufen oder dir weitere Infos in der Hilfe ansehen.</string>
-  <string name="keycombo_update_modifier_key_warning_title">BackTalk-Modifikatortaste aktualisieren</string>
+  <string name="keycombo_update_modifier_key_warning_title">Backtalk-Modifikatortaste aktualisieren</string>
   <string name="keycombo_update_modifier_keys_warning_negative_button">Nicht jetzt</string>
   <string name="keycombo_warning_content_description">Weitere Informationen zur Modifikatortaste</string>
   <string name="keycombo_warning_dialog_title">Modifikatortaste aktualisieren</string>
@@ -167,7 +167,7 @@
   <string name="keycombo_menu_view_system_keyboard_shortcuts">Tastenkombinationen für das System ansehen</string>
   <string name="keycombo_menu_choose_trigger_modifier">Modifikatortaste wählen</string>
   <string name="keycombo_menu_alert_title_trigger_modifier">%1$s als Modifikatortaste verwenden?</string>
-  <string name="keycombo_menu_alert_message_trigger_modifier">BackTalk verwendet derzeit %1$s als Modifikatortaste.</string>
+  <string name="keycombo_menu_alert_message_trigger_modifier">Backtalk verwendet derzeit %1$s als Modifikatortaste.</string>
   <string name="keycombo_menu_alert_button_trigger_modifier">%1$s verwenden</string>
   <string name="keycombo_menu_announce_new_trigger_modifier">Modifikatortaste wurde geändert in %1$s.</string>
   <string name="keycombo_menu_announce_active_keymap">%1$s ist jetzt aktiv.</string>
@@ -224,12 +224,12 @@
   <string name="keycombo_menu_other_show_link_list">Liste der Links anzeigen</string>
   <string name="keycombo_menu_other_show_control_list">Liste der Steuerelemente anzeigen</string>
   <string name="keycombo_menu_other_show_table_list">Liste der Tabellen anzeigen</string>
-  <string name="keycombo_menu_other_talkback_context_menu">BackTalk-Menü anzeigen</string>
+  <string name="keycombo_menu_other_talkback_context_menu">Backtalk-Menü anzeigen</string>
   <string name="keycombo_menu_other_custom_actions">Aktionen anzeigen</string>
   <string name="keycombo_menu_other_language_options">Installierte Sprachen anzeigen</string>
   <string name="keycombo_menu_other_copy_last_spoken_phrase">Letzten gesprochenen Satz kopieren</string>
   <string name="keycombo_menu_other_open_tts_settings">Einstellungen für die Sprachausgabe öffnen</string>
-  <string name="keycombo_menu_other_open_talkback_settings">BackTalk-Einstellungen öffnen</string>
+  <string name="keycombo_menu_other_open_talkback_settings">Backtalk-Einstellungen öffnen</string>
   <string name="keycombo_menu_other_report_issue">Feedback geben</string>
   <string name="keycombo_menu_other_cycle_typing_echo">Zwischen Eingabeechos wechseln</string>
   <string name="keycombo_menu_other_show_keyboard_shortcuts_dialog">Liste der Tastenkombinationen anzeigen</string>
@@ -335,7 +335,7 @@
   <string name="title_pref_brailledisplay">Braillezeile</string>
   <string name="title_pref_brailleime">Brailletastatur</string>
   <string name="summary_pref_brailleime_disabled">Dein Gerät unterstützt keine Brailletastatur</string>
-  <string name="title_pref_speech_footer">Du kannst die Backtalk-Audioeinstellungen einfach auf jedem Bildschirm anpassen.\n\nLautstärke der Bedienungshilfen: Halte den Bildschirm mit einem Finger gedrückt und drücke die Lauter‑ oder Leisertaste.\nTalkBack-Sprechgeschwindigkeit: Wische mit drei Fingern nach oben oder unten. Wenn du „Sprechgeschwindigkeit“ hörst, wische mit einem Finger nach oben oder unten.</string>
+  <string name="title_pref_speech_footer">Du kannst die Backtalk-Audioeinstellungen einfach auf jedem Bildschirm anpassen.\n\nLautstärke der Bedienungshilfen: Halte den Bildschirm mit einem Finger gedrückt und drücke die Lauter‑ oder Leisertaste.\nBacktalk-Sprechgeschwindigkeit: Wische mit drei Fingern nach oben oder unten. Wenn du „Sprechgeschwindigkeit“ hörst, wische mit einem Finger nach oben oder unten.</string>
   <string name="title_pref_vibration">Vibrations­feedback</string>
   <string name="title_pref_soundback">Akustisches Feedback</string>
   <string name="title_pref_use_audio_focus">Audio-Ducking</string>
@@ -441,7 +441,7 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="shortcut_notifications">Benachrichtigungen</string>
   <string name="shortcut_quick_settings">Schnelleinstellungen</string>
   <string name="shortcut_show_custom_actions">Benutzerdefinierte Aktionen anzeigen</string>
-  <string name="shortcut_talkback_breakout">BackTalk-Menü öffnen</string>
+  <string name="shortcut_talkback_breakout">Backtalk-Menü öffnen</string>
   <string name="shortcut_pause_or_resume_feedback">Sprachausgabe pausieren oder fortsetzen</string>
   <string name="shortcut_toggle_voice_feedback">Sprachausgabe ein- oder ausschalten</string>
   <string name="shortcut_read_from_top">Von oben lesen</string>
@@ -457,14 +457,14 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="shortcut_perform_click_action">Aktivieren</string>
   <string name="shortcut_perform_double_click_action">Doppelklicken</string>
   <string name="shortcut_perform_long_click_action">Gedrückt halten</string>
-  <string name="talkback_menu_title">BackTalk-Menü</string>
+  <string name="talkback_menu_title">Backtalk-Menü</string>
   <string name="talkback_menu_close_button_text">@string/close_string</string>
   <string name="talkback_menu_more_options_text">Weitere Menüoptionen sind verfügbar, nachdem du die Einrichtung abgeschlossen oder dein Gerät entsperrt hast</string>
-  <string name="talkback_menu_title_content_description">BackTalk-Menü: Wische nach rechts, um die Optionen im Backtalk-Menü anzusehen.\n\nWische vom Bildschirmrand mit zwei Fingern nach links oder rechts, um zum Tutorial zurückzukehren.</string>
+  <string name="talkback_menu_title_content_description">Backtalk-Menü: Wische nach rechts, um die Optionen im Backtalk-Menü anzusehen.\n\nWische vom Bildschirmrand mit zwei Fingern nach links oder rechts, um zum Tutorial zurückzukehren.</string>
   <string name="shortcut_show_language_options">Gesprochene Sprache ändern</string>
   <string name="shortcut_select_next_setting">Nächste Vorleseoption</string>
   <string name="shortcut_select_previous_setting">Vorherige Vorleseoption</string>
-  <string name="shortcut_pass_through_next">Geste \"TalkBack einmalig deaktivieren\"</string>
+  <string name="shortcut_pass_through_next">Geste \"Backtalk einmalig deaktivieren\"</string>
   <string name="shortcut_a11y_button">Kurzbefehl für Bedienungshilfen</string>
   <string name="shortcut_a11y_button_long_press">Kurzbefehl für Bedienungshilfen gedrückt halten</string>
   <string name="shortcut_selected_setting_next_action">Nächstes Element (unten oder rechts) vorlesen</string>
@@ -539,7 +539,7 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="title_show_screen_search">Bildschirmsuche</string>
   <string name="title_show_voice_commands">Sprachbefehle</string>
   <string name="title_show_keyboard_shortcuts">Tastenkombinationen</string>
-  <string name="talkback_show_talkback_settings">BackTalk-Einstellungen</string>
+  <string name="talkback_show_talkback_settings">Backtalk-Einstellungen</string>
   <string name="title_show_braille_display_settings">Braillezeile-Einstellungen</string>
   <string name="title_granularity_default">Standardnavigation</string>
   <string name="title_action_dismiss">Schließen</string>
@@ -563,11 +563,11 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="summary_spell_last_spoken_phrase">Den letzten von Backtalk gesprochenen Satz buchstabieren</string>
   <string name="summary_repeat_last_spoken_phrase">Den letzten von Backtalk gesprochenen Satz noch einmal anhören</string>
   <string name="summary_perform_screen_search">Suchbegriff eingeben, um den entsprechenden Text auf dem Bildschirm zu finden</string>
-  <string name="summary_voice_commands">BackTalk per Spracheingabe steuern</string>
+  <string name="summary_voice_commands">Backtalk per Spracheingabe steuern</string>
   <string name="summary_show_hide_screen">Display ausblenden, damit andere Personen an öffentlichen Orten deinen Bildschirm nicht sehen können. Display nach dem Ausblenden auf Normalzustand zurücksetzen.</string>
   <string name="summary_control_speak_time">Hier kannst du festlegen, ob die Uhrzeit vorgelesen wird, wenn du den Bildschirm einschaltest</string>
   <string name="summary_show_keyboard_shortcuts_preferences">Liste der Tastenkombinationen öffnen</string>
-  <string name="summary_talkback_preferences">BackTalk-Einstellungen öffnen</string>
+  <string name="summary_talkback_preferences">Backtalk-Einstellungen öffnen</string>
   <string name="summary_braile_display_preferences">Braillezeile-Einstellungen öffnen</string>
   <string name="summary_system_actions">Alle Apps und die Schnelleinstellungen aufrufen</string>
   <string name="summary_tts_settings">Einstellungen für die Sprachausgabe öffnen</string>
@@ -625,7 +625,7 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="summary_image_caption">In einem ausgewählten Bild Text vorlesen und Symbole beschreiben</string>
   <string name="summary_summarize_view">Zusammenfassung der Ansicht vorlesen lassen</string>
   <string name="summary_typo_suggestions">Anzeige erfolgt, wenn sich der Cursor auf einem Tippfehler befindet</string>
-  <string name="summary_cache_keyboard_keys">BackTalk lädt Ansagen vorab, um die Verzögerung beim Tippen zu verringern</string>
+  <string name="summary_cache_keyboard_keys">Backtalk lädt Ansagen vorab, um die Verzögerung beim Tippen zu verringern</string>
   <string name="summary_cache_keyboard_keys_disabled">Verwende die Google Sprachausgabe, um diese Funktion zu nutzen</string>
   <string name="value_direction_down">Nach unten</string>
   <string name="title_pref_shortcut_up">Nach oben wischen</string>
@@ -680,7 +680,7 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="title_pref_shortcut_2finger_3tap_hold">Mit 2 Fingern dreimal tippen und dann halten</string>
   <string name="title_pref_shortcut_3finger_3tap_hold">Mit 3 Fingern dreimal tippen und halten</string>
   <string name="gesture_name_unknown">Unbekannte Touchgeste</string>
-  <string name="gesture_name_pass_through">Geste \"TalkBack einmalig deaktivieren\"</string>
+  <string name="gesture_name_pass_through">Geste \"Backtalk einmalig deaktivieren\"</string>
   <string name="gesture_name_touch_explore">Tippen und entdecken</string>
   <string name="gesture_name_double_tap">Doppeltippen</string>
   <string name="gesture_name_double_tap_xr">2 x Finger zusammenziehen</string>
@@ -731,7 +731,7 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="pref_time_feedback_format_entries_default">Zeitformat des Geräts verwenden</string>
   <string name="pref_time_feedback_format_entries_12_hour">12 Stunden</string>
   <string name="pref_time_feedback_format_entries_24_hour">24 Stunden</string>
-  <string name="notification_title_talkback_gestures_changed">BackTalk-Gesten geändert</string>
+  <string name="notification_title_talkback_gestures_changed">Backtalk-Gesten geändert</string>
   <string name="notification_message_talkback_gestures_changed">Berühren, um geänderte Gesten für Bedienungshilfen aufzurufen</string>
   <string name="always_show_warning_checkbox">Diese Warnung immer anzeigen</string>
   <string name="label_dialog_title_add">Label hinzufügen</string>
@@ -867,9 +867,9 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="dialog_message_continuous_reading_mode">Nachdem du „Von oben lesen“ oder „Ab dem Element im Fokus vorlesen“ ausgewählt hast, kannst du weiterhin zum vorherigen oder nächsten Element wechseln, während der Text vorgelesen wird. So kannst du ganz einfach zurückgehen oder etwas überspringen.\n\nWenn du die Lautstärke anpassen möchtest, während Backtalk spricht, drücke die Lauter- oder Leisertaste.</string>
   <string name="always_show_this_message_label">Diese Nachricht immer anzeigen</string>
   <string name="dialog_title_voice_commands">Sprachbefehle für Backtalk verwenden</string>
-  <string name="dialog_message_voice_commands">Hier sind einige Beispiele für Sprachbefehle:\n\n• Kopieren\n• Ab dem Element im Fokus vorlesen\n• Finde [gespeichertes Element]\n• Sprich [schneller]\n• TalkBack-Einstellungen\n\nSag „%1$s“, um eine Liste aller Sprachbefehle zu sehen</string>
+  <string name="dialog_message_voice_commands">Hier sind einige Beispiele für Sprachbefehle:\n\n• Kopieren\n• Ab dem Element im Fokus vorlesen\n• Finde [gespeichertes Element]\n• Sprich [schneller]\n• Backtalk-Einstellungen\n\nSag „%1$s“, um eine Liste aller Sprachbefehle zu sehen</string>
   <string name="start_voice_command">Sprachbefehle verwenden</string>
-  <string name="dialog_title_pass_through_mode">BackTalk-Touch-Gesten ignorieren und die des Systems verwenden</string>
+  <string name="dialog_title_pass_through_mode">Backtalk-Touch-Gesten ignorieren und die des Systems verwenden</string>
   <string name="dialog_message_pass_through_mode">Wenn du einen Glockenton hörst, kannst du eine System-Geste verwenden, die nicht von Backtalk unterstützt wird.</string>
   <string name="dialog_title_voice_input_download">Zum Verwenden der Spracheingabe Gboard aktualisieren</string>
   <string name="dialog_message_voice_input_download">Die Spracheingabe kann jetzt durch Doppeltippen mit zwei Fingern aktiviert werden, wenn Gboard aktiv ist. Wenn du diese Geste verwenden möchtest, aktualisiere Gboard auf die neueste Version.</string>
@@ -921,10 +921,10 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="training_navigate_up">Nach oben</string>
   <string name="training_tip">Tipp</string>
   <string name="tv_training_overview_step_title">So funktioniert Backtalk</string>
-  <string name="tv_training_overview_step_summary">BackTalk ist der Screenreader von Google. Er liest den Text auf dem Bildschirm vor und gibt dir gesprochenes Feedback, sodass du dein Gerät verwenden kannst, ohne auf den Bildschirm zu schauen.\n\nWenn Backtalk aktiviert ist und du ein Element auf dem Bildschirm auswählst, wird es vorgelesen – manchmal mit zusätzlichen Informationen oder mehr Kontext.\n\nDrücke die Auswahltaste, um fortzufahren. Sie befindet sich in der Mitte der Richtungstaste – das ist die große, runde Taste oben auf deiner Fernbedienung.</string>
+  <string name="tv_training_overview_step_summary">Backtalk ist der Screenreader von Google. Er liest den Text auf dem Bildschirm vor und gibt dir gesprochenes Feedback, sodass du dein Gerät verwenden kannst, ohne auf den Bildschirm zu schauen.\n\nWenn Backtalk aktiviert ist und du ein Element auf dem Bildschirm auswählst, wird es vorgelesen – manchmal mit zusätzlichen Informationen oder mehr Kontext.\n\nDrücke die Auswahltaste, um fortzufahren. Sie befindet sich in der Mitte der Richtungstaste – das ist die große, runde Taste oben auf deiner Fernbedienung.</string>
   <string name="tv_training_remote_step_title">Fernbedienung verwenden</string>
   <string name="tv_training_remote_step_summary">Mit der kreisförmigen Richtungstaste oben auf der Fernbedienung kannst du auf dem Bildschirm die verschiedenen Optionen auswählen. Wenn du etwas auswählen möchtest, drücke die Mitte der Richtungstaste.\n\nIn der zweiten Zeile findest du links den Button „Zurück“. Rechts befindet sich die Taste für den Sprachassistenten.\n\nIn der dritten Zeile findest du links die Startbildschirmtaste. Rechts befindet sich die Taste „Stummschalten“.\n\nIn der vierten Zeile findest du links die YouTube-Verknüpfung. Rechts befindet sich die Netflix-Verknüpfung.\n\nIn der untersten Zeile findest du zwei kleine Tasten. Die linke ist die Ein-/Aus-Taste. Mit der rechten lässt sich das Eingabemenü des Fernsehers öffnen.\n\nDie Lautstärketasten befinden sich an der rechten Seite der Fernbedienung.\n\nDrücke die Auswahltaste, um fortzufahren.</string>
-  <string name="tv_training_shortcut_step_title">BackTalk-Verknüpfung</string>
+  <string name="tv_training_shortcut_step_title">Backtalk-Verknüpfung</string>
   <string name="tv_training_shortcut_step_summary">Wenn du auf den Backtalk-Kurzbefehl zugreifen möchtest, drücke gleichzeitig die Tasten „Nach unten“ und „Zurück“ und halte sie 3 Sekunden lang gedrückt. Dadurch wird Backtalk aktiviert bzw. deaktiviert.\n\nDu kannst auf diesen Kurzbefehl auch in den TV-Einstellungen zugreifen.\n\nDrücke die Auswahltaste, um fortzufahren.</string>
   <string name="new_feature_in_talkback_title">Neue Funktionen in Backtalk</string>
   <string name="exit_tutorial_title">Du bist fertig?</string>
@@ -939,7 +939,7 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="onboarding_link_to_talkback_tutorials">Alle Backtalk-Anleitungen ansehen</string>
   <string name="new_shortcut_gesture_pause_media_announcement">Medienwiedergabe läuft oder ist pausiert. Dadurch wird normalerweise die Wiedergabe des aktuellen Videos oder aktuellen Musiktitels gestartet oder pausiert. Wische zum Fortfahren nach rechts.</string>
   <string name="new_shortcut_gesture_stop_speech_text">Durch Tippen mit 2 Fingern wird die Backtalk-Sprachausgabe vorübergehend angehalten.</string>
-  <string name="new_shortcut_gesture_stop_speech_announcement">BackTalk-Sprachausgabe angehalten. Dadurch wird normalerweise der momentan von Backtalk gesprochene Satz angehalten. Zum Fortfahren wische nach rechts.</string>
+  <string name="new_shortcut_gesture_stop_speech_announcement">Backtalk-Sprachausgabe angehalten. Dadurch wird normalerweise der momentan von Backtalk gesprochene Satz angehalten. Zum Fortfahren wische nach rechts.</string>
   <string name="new_shortcut_gesture_copy_text_text">Durch Doppeltippen mit 3 Fingern wird der aktuelle Text kopiert.</string>
   <string name="new_shortcut_gesture_copy_text_announcement">Text kopiert. Dadurch wird normalerweise der ausgewählte Text kopiert. Zum Fortfahren wische nach rechts.</string>
   <string name="new_shortcut_gesture_paste_text_text">Durch dreimaliges Tippen mit 3 Fingern wird Text eingefügt.</string>
@@ -951,7 +951,7 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="new_shortcut_gesture_reading_menu_text">Wenn du die Vorleseoptionen verwenden möchtest, wische mit drei Fingern nach links oder rechts. Du kannst auch mit drei Fingern nach oben oder unten wischen.</string>
   <string name="new_shortcut_gesture_note">Hinweis: Da du einige deiner Touch-Gesten angepasst hast, sind diese Informationen möglicherweise nicht ganz korrekt. Deine Touch-Gesten findest du in den Backtalk-Einstellungen.</string>
   <string name="welcome_to_android11">Willkommen bei Backtalk für Android 11</string>
-  <string name="welcome_to_android11_text">BackTalk wurden neue Touch-Gesten hinzugefügt, um die Nutzung schneller und einfacher zu machen.\n\nAuf diesem Bildschirm kannst du die neuen Touch-Gesten ausprobieren. Du kannst diese Informationen jederzeit in den Backtalk-Einstellungen nachlesen.</string>
+  <string name="welcome_to_android11_text">Backtalk wurden neue Touch-Gesten hinzugefügt, um die Nutzung schneller und einfacher zu machen.\n\nAuf diesem Bildschirm kannst du die neuen Touch-Gesten ausprobieren. Du kannst diese Informationen jederzeit in den Backtalk-Einstellungen nachlesen.</string>
   <string name="new_gesture_notification_title">Neue Touch-Gesten in Backtalk</string>
   <string name="new_gesture_notification_content">Tippe hier, um zu erfahren, wie du Backtalk mit neuen Touch-Gesten schneller verwenden kannst.</string>
   <string name="dump_node_tree_description">Die Knotenstruktur wurde ins Protokoll gedruckt.</string>
@@ -969,8 +969,8 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
 &lt;br&gt;Dafür musst du die &lt;a href=\"https://play.google.com/store/apps/details?id=com.google.android.inputmethod.latin\"&gt;aktuelle bei Google Play verfügbare Gboard-Version&lt;/a&gt; nutzen.</string>
   <string name="shortcut_for_dictation_content_without_google_play">Wenn Gboard auf dem Bildschirm angezeigt wird, kannst du jetzt mit zwei Fingern doppeltippen, um die Spracheingabe zu starten, und die Funktion durch ein weiteres Doppeltippen mit zwei Fingern beenden.</string>
   <string name="keyboard_title">Tastatur</string>
-  <string name="keyboard_content">BackTalk bietet jetzt eine erweiterte Tastaturbelegung mit vielen neuen Befehlen und Tastenkombinationen. Diese Erweiterung, die auch einen Suchmodus für effizientere Webnavigation enthält, optimiert die Navigation und Interaktion für Backtalk-Nutzer, die auf physische Tastaturen angewiesen sind. Du kannst in den Backtalk-Einstellungen &gt; „Erweiterte Einstellungen“ &gt; „Tastenkombinationen“ zur erweiterten Tastaturbelegung wechseln.</string>
-  <string name="keyboard_content_tts">BackTalk bietet jetzt eine erweiterte Tastaturbelegung mit vielen neuen Befehlen und Tastenkombinationen. Diese Erweiterung, die auch einen Suchmodus für effizientere Webnavigation enthält, optimiert die Navigation und Interaktion für Backtalk-Nutzer, die auf physische Tastaturen angewiesen sind. Du kannst in den Backtalk-Einstellungen unter „Erweiterte Einstellungen“ und dann „Tastenkombinationen“ zur erweiterten Tastaturbelegung wechseln.</string>
+  <string name="keyboard_content">Backtalk bietet jetzt eine erweiterte Tastaturbelegung mit vielen neuen Befehlen und Tastenkombinationen. Diese Erweiterung, die auch einen Suchmodus für effizientere Webnavigation enthält, optimiert die Navigation und Interaktion für Backtalk-Nutzer, die auf physische Tastaturen angewiesen sind. Du kannst in den Backtalk-Einstellungen &gt; „Erweiterte Einstellungen“ &gt; „Tastenkombinationen“ zur erweiterten Tastaturbelegung wechseln.</string>
+  <string name="keyboard_content_tts">Backtalk bietet jetzt eine erweiterte Tastaturbelegung mit vielen neuen Befehlen und Tastenkombinationen. Diese Erweiterung, die auch einen Suchmodus für effizientere Webnavigation enthält, optimiert die Navigation und Interaktion für Backtalk-Nutzer, die auf physische Tastaturen angewiesen sind. Du kannst in den Backtalk-Einstellungen unter „Erweiterte Einstellungen“ und dann „Tastenkombinationen“ zur erweiterten Tastaturbelegung wechseln.</string>
   <string name="reduce_delay_title">Verzögerung reduzieren</string>
   <string name="reduce_delay_content">Du kannst jetzt die Verzögerungen bei Backtalk-Ansagen für Touchfunktionen und das Eintippen verringern. Wenn du die entsprechenden Einstellungen aufrufen möchtest, gehe zu den Backtalk-Einstellungen &gt; „Erweiterte Einstellungen“ &gt; „Verzögerung reduzieren“.</string>
   <string name="reduce_delay_content_tts">Du kannst jetzt die Verzögerungen bei Backtalk-Ansagen für Touchfunktionen und das Eintippen verringern. Wenn du die entsprechenden Einstellungen aufrufen möchtest, gehe zu den Backtalk-Einstellungen und wähle unter „Erweiterte Einstellungen“ die Option „Verzögerung reduzieren“ aus.</string>
@@ -988,8 +988,8 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="announcing_text_formatting_option2">Füge eine Vorleseoption für die Textformatierung hinzu, mit der sich die Ansage von Formatierungsänderungen aktivieren oder deaktivieren lässt.</string>
   <string name="announcing_text_formatting_middle">Wenn du es ausprobieren möchtest, findest du hier ein Beispiel für formatierten Text:</string>
   <string name="announcing_text_formatting_tail">Wenn du ändern möchtest, wie formatierter Text angekündigt wird, kannst du %1$s aufrufen.</string>
-  <string name="text_formatting_options_settings_path">BackTalk-Einstellungen &gt; „Ausführlichkeit“ &gt; „Optionen für die Textformatierung“</string>
-  <string name="text_formatting_options_settings_path_tts">BackTalk-Einstellungen unter „Ausführlichkeit“ und dann „Optionen für die Textformatierung“</string>
+  <string name="text_formatting_options_settings_path">Backtalk-Einstellungen &gt; „Ausführlichkeit“ &gt; „Optionen für die Textformatierung“</string>
+  <string name="text_formatting_options_settings_path_tts">Backtalk-Einstellungen unter „Ausführlichkeit“ und dann „Optionen für die Textformatierung“</string>
   <string name="announcing_text_formatiing_sample">Dieser Text ist &lt;b&gt;fett&lt;/b&gt;, wie eine laute oder selbstbewusste Aussage.
 &lt;br&gt;Dieser Text ist &lt;u&gt;unterstrichen&lt;/u&gt; und ist wie ein Flüstern eher vage.&lt;br&gt;
 &lt;br&gt;&lt;span style=\"background-color:#f08080;\"&gt;Rosen sind rot&lt;/span&gt;, ein Klassiker schon.
@@ -1007,27 +1007,27 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="split_tap_everywhere_title">Geteiltes Tippen ist jetzt überall möglich</string>
   <string name="split_tap_everywhere_text">Du kannst jetzt überall „Geteiltes Tippen“ verwenden, um Elemente zu aktivieren, auch außerhalb der Tastatur. Wenn du diese Funktion verwenden möchtest, lege einen Finger auf das Display. Tippe dann, ohne den ersten Finger anzuheben, mit einem anderen Finger auf das Display, um das aktuell hervorgehobene Element zu aktivieren.</string>
   <string name="keyboard_enhanced_keymap_title">Tastatur: Erweiterte Tastaturbelegung</string>
-  <string name="keyboard_enhanced_keymap_text">BackTalk bietet jetzt eine erweiterte Tastaturbelegung für physische Tastaturen mit vielen neuen Befehlen und Tastenkombinationen. Diese Erweiterung enthält einen Suchmodus für effizientere Webnavigation und optimiert die Bedienung und Interaktion für Backtalk-Nutzer, die auf physische Tastaturen angewiesen sind. Du kannst über die %1$s zur erweiterten Tastaturbelegung wechseln.\n\nWenn du eine Braillezeile verwendest, kannst du auch neue Tastenkombinationen für den Suchmodus verwenden, um dich direkt über die Braillezeile durch Inhalte zu bewegen. Einige Tastenkombinationen für die Braillezeile wurden angepasst, um dieser Änderung Rechnung zu tragen. Eine Liste aller Tastenkombinationen für die Braillezeile findest du in den %2$s.</string>
-  <string name="keyboard_shortcuts_link">BackTalk-Einstellungen &gt; „Tastenkombinationen“</string>
-  <string name="keyboard_shortcuts_link_tts">BackTalk-Einstellungen unter „Tastenkombinationen“</string>
+  <string name="keyboard_enhanced_keymap_text">Backtalk bietet jetzt eine erweiterte Tastaturbelegung für physische Tastaturen mit vielen neuen Befehlen und Tastenkombinationen. Diese Erweiterung enthält einen Suchmodus für effizientere Webnavigation und optimiert die Bedienung und Interaktion für Backtalk-Nutzer, die auf physische Tastaturen angewiesen sind. Du kannst über die %1$s zur erweiterten Tastaturbelegung wechseln.\n\nWenn du eine Braillezeile verwendest, kannst du auch neue Tastenkombinationen für den Suchmodus verwenden, um dich direkt über die Braillezeile durch Inhalte zu bewegen. Einige Tastenkombinationen für die Braillezeile wurden angepasst, um dieser Änderung Rechnung zu tragen. Eine Liste aller Tastenkombinationen für die Braillezeile findest du in den %2$s.</string>
+  <string name="keyboard_shortcuts_link">Backtalk-Einstellungen &gt; „Tastenkombinationen“</string>
+  <string name="keyboard_shortcuts_link_tts">Backtalk-Einstellungen unter „Tastenkombinationen“</string>
   <string name="braille_display_settings_link">Braillezeile-Einstellungen</string>
   <string name="keyboard_smart_browse_mode_title">Tastatur: Intelligenter Suchmodus</string>
   <string name="keyboard_smart_browse_mode_text">Der intelligente Backtalk-Suchmodus deaktiviert den Suchmodus in einem Bearbeitungsfeld, damit du beim Surfen im Web mit einer physischen Tastatur tippen kannst. Wenn du dann zu einem nicht bearbeitbaren Feld im Web wechselst, wird er wieder aktiviert, damit du problemlos weitersurfen kannst. Du kannst den intelligenten Suchmodus in den %1$s aktivieren oder deaktivieren.</string>
-  <string name="advanced_settings_link">BackTalk-Einstellungen &gt; „Erweiterte Einstellungen“</string>
-  <string name="advanced_settings_link_tts">BackTalk-Einstellungen unter „Erweiterte Einstellungen“</string>
+  <string name="advanced_settings_link">Backtalk-Einstellungen &gt; „Erweiterte Einstellungen“</string>
+  <string name="advanced_settings_link_tts">Backtalk-Einstellungen unter „Erweiterte Einstellungen“</string>
   <string name="keyboard_tutorial_title">Anleitung zur Tastaturnutzung</string>
-  <string name="keyboard_tutorial_text">BackTalk enthält jetzt eine Anleitung zur Tastaturnutzung, mit der du die Tastenkombinationen und Befehle für die erweiterte Tastaturbelegung bei Verwendung einer physischen Tastatur lernen kannst. Du findest die Anleitung in den %1$s.</string>
-  <string name="tutorial_link">BackTalk-Einstellungen &gt; „TalkBack-Anleitung“</string>
-  <string name="tutorial_link_tts">BackTalk-Einstellungen unter „TalkBack-Anleitung“</string>
+  <string name="keyboard_tutorial_text">Backtalk enthält jetzt eine Anleitung zur Tastaturnutzung, mit der du die Tastenkombinationen und Befehle für die erweiterte Tastaturbelegung bei Verwendung einer physischen Tastatur lernen kannst. Du findest die Anleitung in den %1$s.</string>
+  <string name="tutorial_link">Backtalk-Einstellungen &gt; „Backtalk-Anleitung“</string>
+  <string name="tutorial_link_tts">Backtalk-Einstellungen unter „Backtalk-Anleitung“</string>
   <string name="tutorial_entry_point_title">Anleitung</string>
   <string name="welcome_to_talkback_title">Willkommen bei Backtalk</string>
-  <string name="talkback_is_on">BackTalk ist aktiviert</string>
-  <string name="talkback_turn_off_description">BackTalk liest dir Inhalte auf deinem Display vor und bietet dir damit eine alternative Möglichkeit zur Bedienung deines Geräts. Du kannst die Funktion deaktivieren, indem du zweimal auf „TalkBack deaktivieren“ tippst.</string>
-  <string name="turn_off_talkback">BackTalk deaktivieren</string>
+  <string name="talkback_is_on">Backtalk ist aktiviert</string>
+  <string name="talkback_turn_off_description">Backtalk liest dir Inhalte auf deinem Display vor und bietet dir damit eine alternative Möglichkeit zur Bedienung deines Geräts. Du kannst die Funktion deaktivieren, indem du zweimal auf „Backtalk deaktivieren“ tippst.</string>
+  <string name="turn_off_talkback">Backtalk deaktivieren</string>
   <string name="tap_again_to_turn_off">Zum Deaktivieren noch einmal tippen</string>
-  <string name="talkback_turn_off_description_pointer_and_touch">BackTalk liest dir Inhalte auf deinem Bildschirm vor und bietet dir damit eine alternative Möglichkeit zur Bedienung deines Geräts. Wenn du Backtalk deaktivieren möchtest, wähle „TalkBack deaktivieren“ aus oder tippe zweimal darauf.</string>
-  <string name="welcome_to_talkback_text">BackTalk bietet gesprochenes Feedback, damit du dein Gerät nutzen kannst, ohne auf den Bildschirm sehen zu müssen. Backtalk ist hilfreich, wenn Nutzer den Bildschirm schlecht oder gar nicht sehen können. \n\nWenn du Backtalk über die Lautstärketasten ein- und ausschalten möchtest, kannst du diesen Kurzbefehl in den Backtalk-Einstellungen unter „TalkBack-Verknüpfung“ einrichten.\n\nWenn Backtalk aktiviert ist, wird das Bildschirmelement im Fokus vorgelesen.\n\nWenn du nach rechts wischst, wird der Fokus auf das nächste Element bewegt, wenn du nach links wischst, auf das vorherige.\n\nWische jetzt nach rechts, um zum Button „Weiter“ zu wechseln.</string>
-  <string name="welcome_to_talkback_text_tts">BackTalk bietet gesprochenes Feedback, damit du dein Gerät nutzen kannst, ohne auf das Display sehen zu müssen. Backtalk ist hilfreich, wenn Nutzer das Display schlecht oder gar nicht sehen können. \n\nWenn du Backtalk über die Lautstärketasten ein- und ausschalten möchtest, kannst du das in den Backtalk-Einstellungen unter „TalkBack-Verknüpfung“ einrichten.\n\nWenn Backtalk aktiviert ist, wird das Bildschirmelement im Fokus vorgelesen.\n\nWenn du nach rechts wischst, wird der Fokus auf das nächste Element bewegt, wenn du nach links wischst, auf das vorherige.\n\nWische jetzt nach rechts, um zum Button „Weiter“ zu wechseln.</string>
+  <string name="talkback_turn_off_description_pointer_and_touch">Backtalk liest dir Inhalte auf deinem Bildschirm vor und bietet dir damit eine alternative Möglichkeit zur Bedienung deines Geräts. Wenn du Backtalk deaktivieren möchtest, wähle „Backtalk deaktivieren“ aus oder tippe zweimal darauf.</string>
+  <string name="welcome_to_talkback_text">Backtalk bietet gesprochenes Feedback, damit du dein Gerät nutzen kannst, ohne auf den Bildschirm sehen zu müssen. Backtalk ist hilfreich, wenn Nutzer den Bildschirm schlecht oder gar nicht sehen können. \n\nWenn du Backtalk über die Lautstärketasten ein- und ausschalten möchtest, kannst du diesen Kurzbefehl in den Backtalk-Einstellungen unter „Backtalk-Verknüpfung“ einrichten.\n\nWenn Backtalk aktiviert ist, wird das Bildschirmelement im Fokus vorgelesen.\n\nWenn du nach rechts wischst, wird der Fokus auf das nächste Element bewegt, wenn du nach links wischst, auf das vorherige.\n\nWische jetzt nach rechts, um zum Button „Weiter“ zu wechseln.</string>
+  <string name="welcome_to_talkback_text_tts">Backtalk bietet gesprochenes Feedback, damit du dein Gerät nutzen kannst, ohne auf das Display sehen zu müssen. Backtalk ist hilfreich, wenn Nutzer das Display schlecht oder gar nicht sehen können. \n\nWenn du Backtalk über die Lautstärketasten ein- und ausschalten möchtest, kannst du das in den Backtalk-Einstellungen unter „Backtalk-Verknüpfung“ einrichten.\n\nWenn Backtalk aktiviert ist, wird das Bildschirmelement im Fokus vorgelesen.\n\nWenn du nach rechts wischst, wird der Fokus auf das nächste Element bewegt, wenn du nach links wischst, auf das vorherige.\n\nWische jetzt nach rechts, um zum Button „Weiter“ zu wechseln.</string>
   <string name="welcome_to_talkback_page_idle_announcement">Wische jetzt nach rechts, um zum Button „Weiter“ zu wechseln</string>
   <string name="explore_by_touch_title">Den Finger über das Display ziehen, um mehr zu entdecken</string>
   <string name="explore_by_touch_text">Du kannst den Fokus auch auf ein Element bewegen, indem du den Finger über das Display ziehst.\n\nProbiere es jetzt aus: Ziehe deinen Finger auf dem Display nach links unten, bis du bei dem Button „Weiter“ bist.</string>
@@ -1065,7 +1065,7 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="image_description_link_text">Bildbeschreibungen</string>
   <string name="image_description_link_subtext">Bildbeschreibungen ausprobieren</string>
   <string name="voice_commands_link_text">Sprachbefehle</string>
-  <string name="voice_commands_link_subtext">BackTalk per Spracheingabe steuern</string>
+  <string name="voice_commands_link_subtext">Backtalk per Spracheingabe steuern</string>
   <string name="screen_search_link_text">Auf dem Bildschirm suchen</string>
   <string name="screen_search_link_subtext">Mit dieser Funktion kannst du gezielt nach Elementen auf dem Bildschirm suchen</string>
   <string name="additional_tips_link_text">Alltägliche Aufgaben</string>
@@ -1165,7 +1165,7 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="lookout_text">Lookout verwendet deine Kamera, um dir Details zu Dingen, Bildern und Text in deiner Umgebung zu geben.  Du kannst die App verwenden, um z. B. Schilder zu lesen und deine Post zu sortieren.</string>
   <string name="lookout_tips">Lookout hat für die verschiedenen Aufgaben, die du ausführen willst, verschiedene Modi. Wenn du dir beispielsweise eine Seite mit Text vorlesen lassen möchtest, wählst du den Dokumentmodus.</string>
   <string name="checking_notifications_title">Benachrichtigun­gen ansehen</string>
-  <string name="checking_notifications_text_head">BackTalk informiert dich, wenn du eine neue Benachrichtigung erhältst.</string>
+  <string name="checking_notifications_text_head">Backtalk informiert dich, wenn du eine neue Benachrichtigung erhältst.</string>
   <string name="checking_notifications_step_one">Wische zuerst mit vier Fingern nach unten, um die Benachrichtigung zu öffnen.</string>
   <string name="checking_notifications_step_two">Wische dann nach rechts oder links, um innerhalb der Benachrichtigung zu navigieren.</string>
   <string name="checking_notifications_text_tail">Unter „Einstellungen“ &gt; „Benachrichtigungen“ kannst du überprüfen, für welche Apps Benachrichtigungen aktiviert sind.</string>
@@ -1187,7 +1187,7 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="button_3">Taste 3</string>
   <string name="button_4">Taste 4</string>
   <string name="activated_view">%1$s aktiviert</string>
-  <string name="talkback_inactive_title">BackTalk ist aus</string>
+  <string name="talkback_inactive_title">Backtalk ist aus</string>
   <string name="talkback_inactive_warning_message">Diese Anleitung funktioniert am besten, wenn Backtalk aktiviert ist. Du kannst diese Änderung in den Einstellungen vornehmen.\n\nWenn du Backtalk deaktiviert lässt, funktionieren Teile der Anleitung möglicherweise nicht wie vorgesehen.</string>
   <string name="do_not_show_again_check_box">Dialogfeld nicht mehr anzeigen</string>
   <string name="talkback_inactive_warning_positive_button">Trotzdem fortfahren</string>
@@ -1208,7 +1208,7 @@ Bei Verzögerungen unter 0,3 Sekunden wird die Aktivierung durch Doppeltippen z
   <string name="wear_training_volume_up_text">Wische nach rechts und dann nach oben</string>
   <string name="wear_training_volume_down_title">Leiser machen</string>
   <string name="wear_training_volume_down_text">Wische nach rechts und dann nach unten</string>
-  <string name="wear_training_open_talkback_menu_title">BackTalk-Menü öffnen</string>
+  <string name="wear_training_open_talkback_menu_title">Backtalk-Menü öffnen</string>
   <string name="wear_training_open_talkback_menu_text">Wenn du Einstellungen und Optionen öffnen möchtest, die du eventuell häufiger benötigst, wische nach unten und dann nach rechts</string>
   <string name="wear_training_typing_title">Tippen</string>
   <string name="wear_training_typing_text1">Wenn du Text eintippen möchtest, bewege deinen Finger über die Tastatur. Sobald du den gewünschten Buchstaben hörst, hebe den Finger an.</string>
@@ -1326,7 +1326,7 @@ Verwende in deiner Antwort kein Markdown.</string>
   <string name="confirm_download_all_image_captioning_message">Wenn du in unterstützten Apps den Fokus auf ein Bild oder Symbol verschiebst, hörst du eine kurze Beschreibung dazu</string>
   <string name="confirm_download_checkbox_text">Meldung nicht mehr anzeigen</string>
   <string name="confirm_download_positive_button_text">Herunterladen</string>
-  <string name="confirm_download_negative_button_hint">BackTalk kann trotzdem Text in Bildern beschreiben</string>
+  <string name="confirm_download_negative_button_hint">Backtalk kann trotzdem Text in Bildern beschreiben</string>
   <string name="downloading_icon_detection_hint">Automatische Symbolbeschreibungen werden heruntergeladen</string>
   <string name="download_icon_detection_successful_hint">Symbolbeschreibungen heruntergeladen</string>
   <string name="download_icon_detection_failed_hint">Automatische Symbolbeschreibungen können nicht heruntergeladen werden</string>
@@ -1434,11 +1434,11 @@ Verwende in deiner Antwort kein Markdown.</string>
   <string name="title_smart_browse_mode">Intelligenter Suchmodus</string>
   <string name="summary_smart_browse_mode">Der Suchmodus wird automatisch ein- oder ausgeschaltet, je nachdem, welches Element gerade im Fokus steht. Dadurch wird der Eingabefokus mit dem Backtalk-Fokus synchronisiert.</string>
   <string name="typing_echo_change_visual_feedback">Echo der physischen Tastatur: %1$s</string>
-  <string name="talkback_turn_off_title">BackTalk deaktivieren?</string>
+  <string name="talkback_turn_off_title">Backtalk deaktivieren?</string>
   <string name="talkback_turn_off_button">Deaktivieren</string>
   <string name="talkback_keep_on_button">Aktiviert lassen</string>
   <string name="talkback_speech_bubble_label">@string/talkback_label</string>
   <string name="close_string">Schließen</string>
-  <string name="talkback_label">BackTalk</string>
+  <string name="talkback_label">Backtalk</string>
   <string name="notifictions_in_lock_screen_notification_content">Wenn du Benachrichtigungen hören möchtest, während dein Display ausgeschaltet ist, aktiviere in den Backtalk-Einstellungen für die Ausführlichkeit die Option „Benachrichtigungen vorlesen, wenn Bildschirm aus“</string>
 </resources>
