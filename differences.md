@@ -197,6 +197,10 @@ With **After the letter, no delay** and **Instead of the letter**, Backtalk says
 
 The **High** preset uses **After the letter, delayed** and the **Low** preset uses **Off**. Your choice from the switch carries over.
 
+### Speech when you touch the screen
+
+With **Controls** > **Touch and activation** > **Stop speech when touching the screen** on, which is the default, touching the screen stops speech, even notifications and messages that new speech doesn't cut off. Activating an item, with a double tap, the activation key or a braille display, stops it too, so that what the item says when activated, such as a switch's new state, is said at once rather than after the rest of the item. Turn the switch off to keep speech going until touch moves focus to another item.
+
 ## Notifications
 
 ### Samsung watch notification content
@@ -226,6 +230,8 @@ TalkBack marked its notices that it was updated, or that gestures changed, as on
 **Sound and vibration** > **Audio output device** chooses where Backtalk's speech and sounds play. **System default** follows Android. **Phone speaker** plays on the phone's speaker even when Bluetooth is connected, and you can also choose a connected Bluetooth, wired, USB, or hearing aid device by name.
 
 Backtalk keeps your choice when devices connect or disconnect, or when other apps start playing. If the device that you chose isn't connected, Backtalk uses another external device, and the setting shows "(disconnected)" next to the device name. During phone calls, Android decides where audio plays.
+
+When you choose Bluetooth headphones that already play your media, Backtalk plays there the way media does. It only takes the call route, which puts headphones into call mode with lower-quality sound for every app, when Android wouldn't play Backtalk's audio on the device otherwise, such as when media plays on another Bluetooth device.
 
 To switch quickly, add **Audio output device** in **Reading controls**. Swiping up or down with it goes through **System default**, **Phone speaker** and each connected device, and changes the same setting.
 
@@ -324,6 +330,10 @@ With **Only on navigation bar** on Android 11 and later, touches on the navigati
 
 **Lift to activate** is also a reading control, so you can change it with a swipe up or down.
 
+### Direct click
+
+Some controls ignore the screen reader's click and only react to a finger, such as **Add to favorites** in TikTok, which works out the button from where the finger lands. With **Controls** > **Touch and activation** > **Direct click** on, activating the focused item, with a double tap, the activation key or a braille display, touches the middle of it on the screen like a finger instead. Text fields, sliders, items off screen, magnified screens and other displays are still activated the usual way, and so is any item whose touch doesn't reach the app. A direct click takes about 100 ms longer than the usual one. It needs Android 13 or later and is off by default.
+
 ### Wrap around
 
 When you swipe past the last item on the screen, TalkBack stops once and then goes back to the first item. To stop at the end instead, turn off **Controls** > **Navigation** > **Wrap around**. Each swipe past the end then plays the end sound. This also applies to moving by heading, link, or control in apps, and to moving with a keyboard. Web pages can still wrap by themselves.
@@ -380,6 +390,14 @@ These items are off by default in the Backtalk menu: **Actions**, **Screen searc
 
 To change the items, go to **Backtalk menu**, under **Controls** in Backtalk settings. In TalkBack, this screen is under **Customize menus**.
 
+### Add last spoken phrase to clipboard
+
+**Add last spoken phrase to clipboard** adds what Backtalk last said to the text it copied, on a new line, so that you can copy several phrases into one block. Copy the first phrase with **Copy last spoken phrase**, then add each of the others. It's an item you can turn on in the Backtalk menu, a gesture action, and a keyboard shortcut. From Android 10, Android doesn't let Backtalk read the clipboard, so the phrase is added to what Backtalk last copied, not to anything you copied in another app.
+
+### Clear text
+
+When a text field with text in it has focus, the edit options in the Backtalk menu have **Clear text**, which deletes all of its text at once.
+
 ### Circle menu
 
 The Backtalk menu can show as a circle in the middle of the screen, as it did in TalkBack 8.1 and earlier. Each item is a slice of the screen around the middle. Slide to an item and lift your finger to select it, or lift in the middle of the circle to close the menu. Items that open more items show them in a new circle. When the menu opens, you hear a rising note and feel a tick for each item.
@@ -407,6 +425,10 @@ Backtalk doesn't stop speech when something covers the proximity sensor. To turn
 ### Screen on and off announcements
 
 In **Verbosity** > **Screen on and off**, you can choose what Backtalk says when the screen turns off, when it turns on, and when you unlock the phone. When the screen turns off, Backtalk says "Screen off" and the ringer mode. When the screen turns on, it says the time, and it can also say the battery, the Wi-Fi network, the mobile network, the ringer and Do Not Disturb, and airplane mode, after the time in the same announcement. When you unlock the phone, it says "Device unlocked". Each of these has its own switch. By default, everything except the extra screen-on items is on.
+
+On phones, at the end of **When the screen turns on**, **Say only the items above** limits automatic System UI lock-screen wake speech to the time and status items you selected. It skips extra lock-screen information, such as the carrier and Extend Unlock, and the automatically restored lock-screen focused item. Focus still returns, and swiping or touching items speaks normally. With no screen-on items selected, the initial lock-screen wake announcement is silent. This option is off by default and is hidden and inactive on Wear OS. The separate **Say "Device unlocked"** switch still controls the unlock announcement.
+
+Some phones send several lock-screen announcements and focus events as they wake. Suppression ends when the device unlocks, you start interacting, the screen turns off, or three seconds pass. System UI and keyguard are identified using Android's configuration, rather than device-specific package names. Unlocked wakes, other apps, incoming calls, alarms, timers, emergency alerts, notifications, and unknown window owners keep their normal speech. The selected time and status announcements still speak normally. Device testing has covered a Samsung Galaxy S23 Plus and a Galaxy S5 running Lineage OS 20; behavior on non-Samsung phones, including Pixels, has not been verified.
 
 These switches are separate from **Status readout**, so the status gesture can say different things. Backtalk doesn't make the screen-on announcement during calls, and the lock screen no longer cuts off "Screen off".
 
@@ -583,6 +605,10 @@ Google's source release doesn't include working Gemini support, so without an AP
 ### On-device AI
 
 Backtalk can describe images and screens with a model that runs on your phone, so nothing is sent to Google or anyone else. For more information, see [On-device AI](README.md#on-device-ai).
+
+### Text in images without Google Play services
+
+TalkBack reads text in images with the ML Kit that runs inside Google Play services. On phones without Play services, such as GrapheneOS without sandboxed Google Play, **Describe image** can't read any text. For those phones, install `backtalk-nogms.apk` from the [dev release](https://github.com/trypsynth/backtalk/releases/tag/dev) instead of `backtalk.apk`. It includes the text recognition model, so it reads text with or without Play services, and it only updates to builds of its own kind. The model is built for all three processor types, so this APK is about 30 MB larger. Both are the same app, so you can install one over the other. TalkBack also sends ML Kit's usage log to Google, and Backtalk doesn't.
 
 ### Clear error messages
 
