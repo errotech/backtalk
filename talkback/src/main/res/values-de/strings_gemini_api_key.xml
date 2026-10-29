@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- Title of the setting, and of its dialog, for the Gemini API key. [CHAR LIMIT=40] -->
-    <string name="title_pref_gemini_api_key">Gemini API key</string>
+    <string name="title_pref_gemini_api_key">Gemini-API-Schlüssel</string>
     <!-- Summary of the Gemini API key setting when the user has entered a key. [CHAR LIMIT=NONE] -->
     <string name="summary_pref_gemini_api_key_set">Gesetzt. Fotos und Bildschirm mit Gemini beschreiben</string>
     <!-- Summary of the Gemini API key setting when the user has not entered a key, but the app was built with one. [CHAR LIMIT=NONE] -->
@@ -47,7 +47,7 @@
     <!-- Spoken when the usage limit of the other AI service is reached. [CHAR LIMIT=NONE] -->
     <string name="ai_service_error_quota">das Nutzungslimit des KI-Dienstes wurde erreicht, später nochmal versuchen.</string>
     <!-- Spoken when the other AI service is overloaded. [CHAR LIMIT=NONE] -->
-    <string name="ai_service_error_busy">The AI service is busy right now. Try again in a moment.</string>
+    <string name="ai_service_error_busy">Der KI-Dienst ist gerade ausgelastet. Versuche es gleich noch einmal.</string>
     <!-- Spoken when the other AI service does not answer in time. [CHAR LIMIT=NONE] -->
     <string name="ai_service_error_timeout">Der KI-Dienst hat zu lange gebraucht, um zu antworten. Nochmal versuchen.</string>
     <!-- Spoken when the other AI service answers with an HTTP error that has no explanation. [CHAR LIMIT=NONE] -->
